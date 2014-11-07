@@ -1,7 +1,7 @@
 [
 	{
 		"id" : "1",
-		"name" : "Artemis", // Challenge: Ἄρτεμις 🎱
+		"name" : "Ἄρτεμις 🎱",
 		"description" : "",
 		"sensors" : [
 			{
@@ -20,14 +20,14 @@
 						"id" : "1",
 						"name" : "lat",
 						"value" : 47.102382,
-						"unit" : "°",
+						"unit" : "°N",
 						"timestamp" : "2014-11-07T14:16:42.007"
 					},
 					{
 						"id" : "1",
 						"name" : "lon",
 						"value" : 7.196388,
-						"unit" : "°",
+						"unit" : "°E",
 						"timestamp" : "2014-11-07T14:16:42.007"
 					}
 				]
@@ -99,6 +99,26 @@
 						"value" : 12.012800641024,
 						"unit" : "°C",
 						"timestamp" : "2014-11-07T14:15:12.64"
+					}
+				]
+			},
+			{
+				"id" : "4",
+				"name" : "selfie",
+				"delay" : 3600,
+				"status" : "ok",
+				"type" : {
+					"id" : "3",
+					"name" : "image",
+					"description" : ""
+				},
+				"measurements" : [
+					{
+						"id" : "5",
+						"name" : "image",
+						"value" : "http://www.fischerforum.ch/coppermine/albums/userpics/10002/070802_Bielersee_Ferien_04.jpg",
+						"unit" : "image/jpeg",
+						"timestamp" : "2014-11-07T13:21:12.64"
 					}
 				]
 			}
