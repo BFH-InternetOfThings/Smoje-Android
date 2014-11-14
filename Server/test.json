@@ -21,14 +21,14 @@
 						"name" : "lat",
 						"value" : 47.102382,
 						"unit" : "°N",
-						"timestamp" : "2014-11-07T14:16:42.007"
+						"timestamp" : "2014-11-07T14:16:42.007+0100"
 					},
 					{
 						"id" : "1",
 						"name" : "lon",
 						"value" : 7.196388,
 						"unit" : "°E",
-						"timestamp" : "2014-11-07T14:16:42.007"
+						"timestamp" : "2014-11-07T14:16:42.007+0100"
 					}
 				]
 			},
@@ -49,14 +49,14 @@
 						"name" : "speed",
 						"value" : 5.1,
 						"unit" : "km/h",
-						"timestamp" : "2014-11-07T14:16:42.128"
+						"timestamp" : "2014-11-07T14:16:42.128+0100"
 					},
 					{
 						"id" : "4",
 						"name" : "direction",
 						"value" : 136.916481,
 						"unit" : "°",
-						"timestamp" : "2014-11-07T14:16:42.128"
+						"timestamp" : "2014-11-07T14:16:42.128+0100"
 					}
 				]
 			},
@@ -77,7 +77,7 @@
 						"name" : "air temperature",
 						"value" : 10.6128641024,
 						"unit" : "°C",
-						"timestamp" : "2014-11-07T14:15:12.64"
+						"timestamp" : "2014-11-07T14:15:12.064+0100"
 					}
 				]
 			},
@@ -98,13 +98,14 @@
 						"name" : "water temperature",
 						"value" : 12.012800641024,
 						"unit" : "°C",
-						"timestamp" : "2014-11-07T14:15:12.64"
+						"timestamp" : "2014-11-07T14:15:12.640+0100"
 					}
 				]
 			},
 			{
 				"id" : "4",
 				"name" : "selfie",
+				"description" : "",
 				"delay" : 3600,
 				"status" : "ok",
 				"type" : {
@@ -118,7 +119,7 @@
 						"name" : "image",
 						"value" : "http://www.fischerforum.ch/coppermine/albums/userpics/10002/070802_Bielersee_Ferien_04.jpg",
 						"unit" : "image/jpeg",
-						"timestamp" : "2014-11-07T13:21:12.64"
+						"timestamp" : "2014-11-07T13:21:12.640+0100"
 					}
 				]
 			}

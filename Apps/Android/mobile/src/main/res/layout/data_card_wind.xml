@@ -11,14 +11,58 @@
                                     card_view:cardBackgroundColor="@color/wind"
                                     card_view:cardCornerRadius="4dp">
 
-
-    <TextView
-            android:id="@+id/text"
-            android:layout_width="wrap_content"
+    <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Large Text"
-            android:padding="16dp"
-            android:layout_gravity="center_horizontal"/>
+            android:padding="16dp">
+
+        <TextView
+                android:id="@+id/wind_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/wind"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"/>
+
+        <GridLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:columnCount="2">
+
+            <TextView
+                    android:id="@+id/speed_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:text="@string/speed_label"/>
+
+            <TextView
+                    android:id="@+id/speed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginStart="4dp"
+                    android:text="0km/h"/>
+
+            <TextView
+                    android:id="@+id/direction_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:text="@string/direction_label"/>
+
+            <TextView
+                    android:id="@+id/direction"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginStart="4dp"
+                    android:text="360˚"/>
+
+        </GridLayout>
+    </RelativeLayout>
 
 </android.support.v7.widget.CardView>

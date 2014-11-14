@@ -1,17 +1,32 @@
 package ch.bfh.mobicomp.smuoy;
 
 import android.app.Fragment;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import ch.bfh.mobicomp.smuoy.dummy.DummyContent;
+import android.widget.Toast;
+import ch.bfh.mobicomp.smuoy.entities.*;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMapOptions;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
+import java.net.URL;
+
+import static ch.bfh.mobicomp.smuoy.SmuoyService.smuoyService;
+import static ch.bfh.mobicomp.smuoy.Utils.direction;
 
 /**
  * A fragment representing a single Smuoy detail screen.
@@ -29,7 +44,9 @@ public class SmuoyDetailFragment extends Fragment {
     /**
      * The dummy content this fragment is presenting.
      */
-    private DummyContent.Smuoy item;
+    private Smuoy item;
+    private MapFragment mapFragment;
+    private MarkerOptions mapMarker;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -46,7 +63,7 @@ public class SmuoyDetailFragment extends Fragment {
             // Load the dummy content specified by the fragment
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
-            item = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
+            item = smuoyService.getSmuoy(getArguments().getString(ARG_ITEM_ID));
         }
     }
 
@@ -57,9 +74,9 @@ public class SmuoyDetailFragment extends Fragment {
 
         // Show the dummy content as text in a TextView.
         if (item != null) {
-            addCard(inflater, rootView, item.id);
-            for (DummyContent.SensorData sensor : item.sensorData) {
-                addCard(inflater, rootView, sensor);
+            getActivity().setTitle(item.name);
+            for (Sensor sensor : item.sensors) {
+                addCard(inflater, rootView, sensor.latestData);
             }
         }
 
@@ -75,27 +92,86 @@ public class SmuoyDetailFragment extends Fragment {
         parentView.addView(card);
     }
 
-    private void addCard(LayoutInflater inflater, ViewGroup parentView, DummyContent.SensorData sensor) {
+    private void addCard(LayoutInflater inflater, final ViewGroup parentView, Measurement measurement) {
         CardView card;
-        if ("wind".equalsIgnoreCase(sensor.getGroup())) {
-            card = getCard(inflater, parentView, R.layout.data_card_wind, false);
+        if (measurement instanceof WindMeasurement) {
+            card = getCard(inflater, parentView, R.layout.data_card_wind);
+            WindMeasurement windMeasurement = (WindMeasurement) measurement;
+            setText(card, R.id.speed, String.format("%1$.2fkm/h", windMeasurement.speed));
+            setText(card, R.id.direction, direction(windMeasurement.direction));
+        } else if (measurement instanceof ImageMeasurement) {
+            card = getCard(inflater, parentView, R.layout.data_card_image);
+            loadImage((ImageView) card.findViewById(R.id.image), ((ImageMeasurement) measurement).url);
+        } else if (measurement instanceof GpsMeasurement) {
+            card = getCard(inflater, parentView, R.layout.data_card_map);
+
+            GpsMeasurement gpsMeasurement = (GpsMeasurement) measurement;
+
+            GoogleMapOptions mapOptions = new GoogleMapOptions();
+            mapOptions.mapType(GoogleMap.MAP_TYPE_NORMAL);
+            mapOptions.camera(new CameraPosition(new LatLng(gpsMeasurement.lat, gpsMeasurement.lon), 12, 0, 0));
+
+            mapFragment = MapFragment.newInstance(mapOptions);
+            getFragmentManager().beginTransaction().add(R.id.map_container, mapFragment).commit();
+
+            mapMarker = new MarkerOptions().position(new LatLng(gpsMeasurement.lat, gpsMeasurement.lon));
         } else {
-            card = getCard(inflater, parentView, R.layout.data_card_basic, true);
-            setText(card, R.id.text, sensor.toString());
+            card = getCard(inflater, parentView, R.layout.data_card_basic);
+            setText(card, R.id.text, measurement.toString());
         }
         parentView.addView(card);
     }
 
-    private Map<Integer, CardView> cardViews = new HashMap<>();
-    private CardView getCard(LayoutInflater inflater, ViewGroup parentView, int id, boolean forceNew){
-        CardView card = cardViews.get(id);
-        if (forceNew || card == null) {
-            card = (CardView) inflater.inflate(id, parentView, false);
+    private CardView getCard(LayoutInflater inflater, ViewGroup parentView, int id) {
+        return (CardView) inflater.inflate(id, parentView, false);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (mapFragment == null || mapMarker == null) {
+            return;
         }
-        return card;
+
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity());
+        if (resultCode == ConnectionResult.SUCCESS) {
+            GoogleMap map = mapFragment.getMap();
+            if (map != null) {
+                map.setMyLocationEnabled(true);
+                map.getUiSettings().setMyLocationButtonEnabled(false);
+                map.getUiSettings().setZoomControlsEnabled(false);
+                map.addMarker(mapMarker);
+            } else {
+                Toast.makeText(getActivity(),
+                        R.string.error_loading_map,
+                        Toast.LENGTH_LONG).show();
+            }
+        } else {
+            GooglePlayServicesUtil.getErrorDialog(resultCode, getActivity(), 1);
+        }
     }
 
     private void setText(View parent, int id, CharSequence text) {
         ((TextView) parent.findViewById(id)).setText(text);
+    }
+
+    private void loadImage(final ImageView imageView, final URL imageUrl) {
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    final Bitmap image = BitmapFactory.decodeStream(imageUrl.openStream());
+                    imageView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            imageView.setImageBitmap(image);
+                        }
+                    });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
     }
 }

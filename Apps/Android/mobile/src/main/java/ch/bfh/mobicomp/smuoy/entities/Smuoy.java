@@ -32,4 +32,9 @@ public class Smuoy {
             Log.d("Smuoy", "Can't get JSONArray 'sensors'", e);
         }
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

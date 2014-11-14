@@ -5,7 +5,10 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-import ch.bfh.mobicomp.smuoy.dummy.DummyContent;
+import ch.bfh.mobicomp.smuoy.entities.GpsMeasurement;
+import ch.bfh.mobicomp.smuoy.entities.Measurement;
+import ch.bfh.mobicomp.smuoy.entities.Sensor;
+import ch.bfh.mobicomp.smuoy.entities.Smuoy;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -15,7 +18,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import static ch.bfh.mobicomp.smuoy.dummy.DummyContent.*;
+import static ch.bfh.mobicomp.smuoy.SmuoyService.smuoyService;
 
 
 public class MapActivity extends ActionBarActivity {
@@ -50,7 +53,6 @@ public class MapActivity extends ActionBarActivity {
     protected void onResume() {
         super.onResume();
 
-
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
         if (resultCode == ConnectionResult.SUCCESS) {
             if (map == null) {
@@ -65,12 +67,14 @@ public class MapActivity extends ActionBarActivity {
                             map.animateCamera(CameraUpdateFactory.newLatLngBounds(LAKE_BIEL, 0));
                         }
                     });
-                    for (Smuoy smuoy: ITEMS) {
-                        for (SensorData sensor : smuoy.sensorData) {
-                            if ("gps".equalsIgnoreCase(sensor.sensor)) {
+                    for (Smuoy smuoy: smuoyService.getSmuoys()) {
+                        for (Sensor sensor : smuoy.sensors) {
+                            Measurement data = sensor.latestData;
+                            if (data instanceof GpsMeasurement) {
+                                GpsMeasurement gpsData = (GpsMeasurement)data;
                                 map.addMarker(new MarkerOptions()
-                                        .position(new LatLng(10, 10))
-                                        .title("Hello world"));
+                                        .position(new LatLng(gpsData.lat, gpsData.lon))
+                                        .title(smuoy.name));
                             }
                         }
                     }

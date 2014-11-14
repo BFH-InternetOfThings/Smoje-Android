@@ -9,6 +9,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static ch.bfh.mobicomp.smuoy.Utils.date;
 import static ch.bfh.mobicomp.smuoy.Utils.str;
 
 /**
@@ -24,7 +25,7 @@ public class Measurement {
         try {
             jsonObject = measurements.getJSONObject(0);
             id = str(jsonObject, "id", "");
-            timestamp = SimpleDateFormat.getInstance().parse(str(jsonObject, "timestamp", null));
+            timestamp = date(jsonObject, "timestamp", null);
         } catch (Exception e) {
             Log.e("Measurement", "Can't get field 'id' or 'timestamp' from JSON", e);
         }
