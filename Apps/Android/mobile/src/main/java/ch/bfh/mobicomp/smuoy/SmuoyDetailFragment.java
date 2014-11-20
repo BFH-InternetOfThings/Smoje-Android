@@ -1,8 +1,6 @@
 package ch.bfh.mobicomp.smuoy;
 
 import android.app.Fragment;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
@@ -21,9 +19,6 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import java.io.IOException;
-import java.net.URL;
 
 import static ch.bfh.mobicomp.smuoy.SmuoyService.smuoyService;
 import static ch.bfh.mobicomp.smuoy.Utils.direction;
@@ -101,7 +96,7 @@ public class SmuoyDetailFragment extends Fragment {
             setText(card, R.id.direction, direction(windMeasurement.direction));
         } else if (measurement instanceof ImageMeasurement) {
             card = getCard(inflater, parentView, R.layout.data_card_image);
-            loadImage((ImageView) card.findViewById(R.id.image), ((ImageMeasurement) measurement).url);
+            new DownloadImageTask((ImageView) card.findViewById(R.id.image)).execute(((ImageMeasurement) measurement).url);
         } else if (measurement instanceof GpsMeasurement) {
             card = getCard(inflater, parentView, R.layout.data_card_map);
 
@@ -141,6 +136,7 @@ public class SmuoyDetailFragment extends Fragment {
                 map.setMyLocationEnabled(true);
                 map.getUiSettings().setMyLocationButtonEnabled(false);
                 map.getUiSettings().setZoomControlsEnabled(false);
+                map.getUiSettings().setAllGesturesEnabled(false);
                 map.addMarker(mapMarker);
             } else {
                 Toast.makeText(getActivity(),
@@ -156,22 +152,4 @@ public class SmuoyDetailFragment extends Fragment {
         ((TextView) parent.findViewById(id)).setText(text);
     }
 
-    private void loadImage(final ImageView imageView, final URL imageUrl) {
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    final Bitmap image = BitmapFactory.decodeStream(imageUrl.openStream());
-                    imageView.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            imageView.setImageBitmap(image);
-                        }
-                    });
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }.start();
-    }
 }
