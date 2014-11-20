@@ -43,21 +43,14 @@ public class SmuoyDetailFragment extends Fragment {
     private MapFragment mapFragment;
     private MarkerOptions mapMarker;
 
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
-    public SmuoyDetailFragment() {
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Retain this fragment across configuration changes.
+        setRetainInstance(true);
+
         if (getArguments().containsKey(ARG_ITEM_ID)) {
-            // Load the dummy content specified by the fragment
-            // arguments. In a real-world scenario, use a Loader
-            // to load content from a content provider.
             item = smuoyService.getSmuoy(getArguments().getString(ARG_ITEM_ID));
         }
     }
@@ -76,15 +69,6 @@ public class SmuoyDetailFragment extends Fragment {
         }
 
         return rootView;
-    }
-
-    private void addCard(LayoutInflater inflater, ViewGroup parentView, CharSequence text) {
-        CardView card = (CardView) inflater.inflate(R.layout.data_card_basic, parentView, false);
-
-        TextView titleText = (TextView) card.findViewById(R.id.text);
-        titleText.setText(text);
-
-        parentView.addView(card);
     }
 
     private void addCard(LayoutInflater inflater, final ViewGroup parentView, Measurement measurement) {
