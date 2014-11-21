@@ -11,5 +11,8 @@
     <string name="wind">Wind</string>
     <string name="speed_label">Speed:</string>
     <string name="direction_label">Direction:</string>
+    <string name="temperature_water">Water Temperature</string>
+    <string name="temperature_air">Air Temperature</string>
+    <string name="temperature">Temperature</string>
 
 </resources>

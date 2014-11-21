@@ -10,4 +10,7 @@
     <string name="wind">Wind</string>
     <string name="direction_label">Richtung:</string>
     <string name="speed_label">Geschwindigkeit:</string>
+    <string name="temperature_water">Wassertemperatur</string>
+    <string name="temperature_air">Lufttemperatur</string>
+    <string name="temperature">Temperatur</string>
 </resources>

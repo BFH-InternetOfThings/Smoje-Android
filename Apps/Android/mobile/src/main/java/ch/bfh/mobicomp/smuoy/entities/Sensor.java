@@ -45,7 +45,7 @@ public class Sensor {
                     latestData = new ImageMeasurement(measurements);
                     break;
                 default:
-                    latestData = new SimpleMeasurement(measurements);
+                    latestData = new SimpleMeasurement(measurements, this);
                     break;
             }
         } catch (JSONException e) {

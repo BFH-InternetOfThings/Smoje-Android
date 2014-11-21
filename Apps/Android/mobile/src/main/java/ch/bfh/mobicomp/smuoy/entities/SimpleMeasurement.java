@@ -14,13 +14,15 @@ import static ch.bfh.mobicomp.smuoy.Utils.str;
 public class SimpleMeasurement extends Measurement {
     public double value;
     public String unit;
+    public Sensor sensor;
 
-    public SimpleMeasurement(JSONArray measurements) {
+    public SimpleMeasurement(JSONArray measurements, Sensor sensor) {
         super(measurements);
         try {
             JSONObject json = measurements.getJSONObject(0);
             value = dec(json, "value", 0);
             unit = str(json, "unit", "");
+            this.sensor = sensor;
         } catch (JSONException e) {
             Log.e("SimpleMeasurement", "Can't get field 'value' from JSON", e);
         }

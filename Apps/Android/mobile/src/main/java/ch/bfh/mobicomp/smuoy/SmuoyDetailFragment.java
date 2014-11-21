@@ -94,6 +94,44 @@ public class SmuoyDetailFragment extends Fragment {
             getFragmentManager().beginTransaction().add(R.id.map_container, mapFragment).commit();
 
             mapMarker = new MarkerOptions().position(new LatLng(gpsMeasurement.lat, gpsMeasurement.lon));
+        } else if (measurement instanceof SimpleMeasurement) {
+            SimpleMeasurement simple = (SimpleMeasurement) measurement;
+            if ("temperature".equals(simple.sensor.type)) {
+                String name = simple.sensor.name;
+                int drawableResource = 0;
+                card = getCard(inflater, parentView, R.layout.data_card_temperature);
+                switch (name) {
+                    case "water temperature":
+                        name = getActivity().getString(R.string.temperature_water);
+                        if (simple.value < 10) {
+                            drawableResource = R.drawable.ic_temperature_water_cold;
+                        } else if (simple.value < 15) {
+                            drawableResource = R.drawable.ic_temperature_water_warm;
+                        } else {
+                            drawableResource = R.drawable.ic_temperature_water_hot;
+                        }
+                        break;
+                    case "air temperature":
+                        name = getActivity().getString(R.string.temperature_air);
+                        if (simple.value < 15) {
+                            drawableResource = R.drawable.ic_temperature_air_cold;
+                        } else if (simple.value < 25) {
+                            drawableResource = R.drawable.ic_temperature_air_warm;
+                        } else {
+                            drawableResource = R.drawable.ic_temperature_air_hot;
+                        }
+                        break;
+                }
+                setText(card, R.id.label, name);
+                setText(card, R.id.temperature, String.format("%1$.1f%2$s", simple.value, simple.unit));
+                if (drawableResource > 0) {
+                    ImageView icon = (ImageView) card.findViewById(R.id.icon);
+                    icon.setImageResource(drawableResource);
+                }
+            } else {
+                card = getCard(inflater, parentView, R.layout.data_card_basic);
+                setText(card, R.id.text, measurement.toString());
+            }
         } else {
             card = getCard(inflater, parentView, R.layout.data_card_basic);
             setText(card, R.id.text, measurement.toString());
