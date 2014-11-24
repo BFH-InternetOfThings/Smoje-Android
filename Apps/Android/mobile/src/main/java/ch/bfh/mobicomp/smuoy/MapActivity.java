@@ -35,8 +35,7 @@ public class MapActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
-        getSupportActionBar().setIcon(R.drawable.ic_launcher);
-
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mapFragment = (MapFragment) getFragmentManager().findFragmentByTag("map");
 
@@ -67,11 +66,11 @@ public class MapActivity extends ActionBarActivity {
                             map.animateCamera(CameraUpdateFactory.newLatLngBounds(LAKE_BIEL, 0));
                         }
                     });
-                    for (Smuoy smuoy: smuoyService.getSmuoys()) {
+                    for (Smuoy smuoy : smuoyService.getSmuoys()) {
                         for (Sensor sensor : smuoy.sensors) {
                             Measurement data = sensor.latestData;
                             if (data instanceof GpsMeasurement) {
-                                GpsMeasurement gpsData = (GpsMeasurement)data;
+                                GpsMeasurement gpsData = (GpsMeasurement) data;
                                 map.addMarker(new MarkerOptions()
                                         .position(new LatLng(gpsData.lat, gpsData.lon))
                                         .title(smuoy.name));
