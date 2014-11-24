@@ -12,11 +12,13 @@ import static ch.bfh.mobicomp.smuoy.Utils.str;
  * Created by chris on 07.11.14.
  */
 public class WindMeasurement extends Measurement {
-    public double speed; // km/h
-    public double direction; // °
+    public final double speed; // km/h
+    public final double direction; // °
 
-    public WindMeasurement(JSONArray measurements) {
+    public WindMeasurement(Sensor sensor, JSONArray measurements) {
         super(measurements);
+        double speed = 0;
+        double direction = 0;
         try {
             for (int i = 0; i < measurements.length(); i++) {
                 JSONObject json = measurements.getJSONObject(i);
@@ -32,6 +34,8 @@ public class WindMeasurement extends Measurement {
         } catch (JSONException e) {
             Log.e("WindMeasurement", "Can't get field 'value' from JSON", e);
         }
+        this.speed = speed;
+        this.direction = direction;
     }
 
     @Override

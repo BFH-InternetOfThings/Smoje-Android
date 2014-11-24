@@ -12,14 +12,14 @@ import static ch.bfh.mobicomp.smuoy.Utils.str;
  * Created by chris on 07.11.14.
  */
 public class Sensor {
-    public String id;
-    public String name;
-    public String description;
-    public int delay; // in seconds
-    public String status;
-    public String type;
-    public String typeDescription;
-    public Measurement latestData;
+    public final String id;
+    public final String name;
+    public final String description;
+    public final int delay; // in seconds
+    public final String status;
+    public final String type;
+    public final String typeDescription;
+    public final Measurement latestData;
 
     public Sensor(JSONObject json) {
         id = str(json, "id", "");
@@ -27,6 +27,10 @@ public class Sensor {
         description = str(json, "description", "");
         delay = num(json, "delay", 60);
         status = str(json, "status", "");
+
+        String type = "";
+        String typeDescription = "";
+        Measurement latestData = null;
 
         try {
             JSONObject typeJson = json.getJSONObject("type");
@@ -45,11 +49,14 @@ public class Sensor {
                     latestData = new ImageMeasurement(measurements);
                     break;
                 default:
-                    latestData = new SimpleMeasurement(measurements, this);
+                    latestData = new SimpleMeasurement(this, measurements);
                     break;
             }
         } catch (JSONException e) {
             Log.d("Sensor", "Can't get field 'type' from JSON", e);
         }
+        this.type = type;
+        this.typeDescription = typeDescription;
+        this.latestData = latestData;
     }
 }

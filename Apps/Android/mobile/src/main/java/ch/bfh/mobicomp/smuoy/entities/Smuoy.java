@@ -13,10 +13,10 @@ import static ch.bfh.mobicomp.smuoy.Utils.str;
  * Created by chris on 07.11.14.
  */
 public class Smuoy {
-    public String id;
-    public String name;
-    public String description;
-    public List<Sensor> sensors = new LinkedList<>();
+    public final String id;
+    public final String name;
+    public final String description;
+    public final List<Sensor> sensors = new LinkedList<>();
 
     public Smuoy(JSONObject json) {
         id = str(json, "id", "");

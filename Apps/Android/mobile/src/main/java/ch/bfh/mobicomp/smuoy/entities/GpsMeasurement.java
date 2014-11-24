@@ -12,11 +12,13 @@ import static ch.bfh.mobicomp.smuoy.Utils.str;
  * Created by chris on 07.11.14.
  */
 public class GpsMeasurement extends Measurement {
-    public double lat;
-    public double lon;
+    public final double lat;
+    public final double lon;
 
     public GpsMeasurement(JSONArray measurements) {
         super(measurements);
+        double lat = 0;
+        double lon = 0;
         try {
             for (int i = 0; i < measurements.length(); i++) {
                 JSONObject json = measurements.getJSONObject(i);
@@ -32,6 +34,8 @@ public class GpsMeasurement extends Measurement {
         } catch (JSONException e) {
             Log.d("GpsMeasurement", "Can't get field 'name', 'lat' or 'lon' from JSON", e);
         }
+        this.lat = lat;
+        this.lon = lon;
     }
 
     @Override

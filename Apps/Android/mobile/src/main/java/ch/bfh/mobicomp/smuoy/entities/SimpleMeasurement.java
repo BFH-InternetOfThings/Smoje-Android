@@ -12,20 +12,24 @@ import static ch.bfh.mobicomp.smuoy.Utils.str;
  * Created by chris on 07.11.14.
  */
 public class SimpleMeasurement extends Measurement {
-    public double value;
-    public String unit;
-    public Sensor sensor;
+    public final double value;
+    public final String unit;
+    public final Sensor sensor;
 
-    public SimpleMeasurement(JSONArray measurements, Sensor sensor) {
+    public SimpleMeasurement(Sensor sensor, JSONArray measurements) {
         super(measurements);
+        double value = 0;
+        String unit = "";
         try {
             JSONObject json = measurements.getJSONObject(0);
             value = dec(json, "value", 0);
             unit = str(json, "unit", "");
-            this.sensor = sensor;
         } catch (JSONException e) {
             Log.e("SimpleMeasurement", "Can't get field 'value' from JSON", e);
         }
+        this.value = value;
+        this.unit = unit;
+        this.sensor = sensor;
     }
 
     @Override
