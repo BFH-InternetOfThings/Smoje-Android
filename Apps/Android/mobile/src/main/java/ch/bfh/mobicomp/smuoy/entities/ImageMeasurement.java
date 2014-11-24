@@ -12,8 +12,9 @@ import static ch.bfh.mobicomp.smuoy.Utils.str;
  */
 public class ImageMeasurement extends Measurement {
     public final URL url;
+    public final Sensor sensor;
 
-    public ImageMeasurement(JSONArray measurements) {
+    public ImageMeasurement(Sensor sensor, JSONArray measurements) {
         super(measurements);
         URL tempURL = null;
         try {
@@ -22,5 +23,6 @@ public class ImageMeasurement extends Measurement {
             Log.d("ImageMeasurement", "Can't get field 'value' from JSON", e);
         }
         url = tempURL;
+        this.sensor = sensor;
     }
 }

@@ -46,7 +46,7 @@ public class Sensor {
                     latestData = new WindMeasurement(measurements);
                     break;
                 case "image":
-                    latestData = new ImageMeasurement(measurements);
+                    latestData = new ImageMeasurement(this, measurements);
                     break;
                 default:
                     latestData = new SimpleMeasurement(this, measurements);

@@ -15,7 +15,7 @@ public class WindMeasurement extends Measurement {
     public final double speed; // km/h
     public final double direction; // °
 
-    public WindMeasurement(Sensor sensor, JSONArray measurements) {
+    public WindMeasurement(JSONArray measurements) {
         super(measurements);
         double speed = 0;
         double direction = 0;
