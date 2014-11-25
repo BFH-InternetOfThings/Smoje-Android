@@ -5,8 +5,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static ch.bfh.mobicomp.smuoy.Utils.dec;
-import static ch.bfh.mobicomp.smuoy.Utils.str;
+import static ch.bfh.mobicomp.smuoy.utils.Utils.dec;
+import static ch.bfh.mobicomp.smuoy.utils.Utils.str;
 
 /**
  * Created by chris on 07.11.14.

@@ -1,4 +1,4 @@
-package ch.bfh.mobicomp.smuoy;
+package ch.bfh.mobicomp.smuoy.utils;
 
 import android.util.Log;
 import org.json.JSONException;

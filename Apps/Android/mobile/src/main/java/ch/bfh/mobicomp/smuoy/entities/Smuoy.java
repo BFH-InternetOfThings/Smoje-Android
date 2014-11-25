@@ -5,14 +5,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
-import static ch.bfh.mobicomp.smuoy.Utils.str;
+import static ch.bfh.mobicomp.smuoy.utils.Utils.str;
 
 /**
  * Created by chris on 07.11.14.
  */
-public class Smuoy {
+public class Smuoy implements Serializable {
     public final String id;
     public final String name;
     public final String description;

@@ -5,7 +5,7 @@ import org.json.JSONArray;
 
 import java.net.URL;
 
-import static ch.bfh.mobicomp.smuoy.Utils.str;
+import static ch.bfh.mobicomp.smuoy.utils.Utils.str;
 
 /**
  * Created by chris on 07.11.14.

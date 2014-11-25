@@ -1,4 +1,4 @@
-package ch.bfh.mobicomp.smuoy;
+package ch.bfh.mobicomp.smuoy.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

@@ -27,11 +27,13 @@ import android.view.MenuItem;
 public class SmuoyListActivity extends ActionBarActivity
         implements SmuoyListFragment.Callbacks {
 
+    public static String SMUOY_ID = "smuoyId";
+
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
-    private boolean mTwoPane;
+    private boolean twoPane;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +47,7 @@ public class SmuoyListActivity extends ActionBarActivity
             // large-screen layouts (res/values-large and
             // res/values-sw600dp). If this view is present, then the
             // activity should be in two-pane mode.
-            mTwoPane = true;
+            twoPane = true;
 
             // In two-pane mode, list items should be given the
             // 'activated' state when touched.
@@ -54,7 +56,12 @@ public class SmuoyListActivity extends ActionBarActivity
                     .setActivateOnItemClick(true);
         }
 
-        // TODO: If exposing deep links into your app, handle intents here.
+        if (getIntent().hasExtra(SMUOY_ID)) {
+            String smuoyId = getIntent().getStringExtra(SMUOY_ID);
+            if (smuoyId != null) {
+                onItemSelected(smuoyId);
+            }
+        }
     }
 
     /**
@@ -63,7 +70,7 @@ public class SmuoyListActivity extends ActionBarActivity
      */
     @Override
     public void onItemSelected(String id) {
-        if (mTwoPane) {
+        if (twoPane) {
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
             // fragment transaction.
@@ -93,7 +100,7 @@ public class SmuoyListActivity extends ActionBarActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.action_show_map:
                 startActivity(new Intent(this, MapActivity.class));
                 return true;

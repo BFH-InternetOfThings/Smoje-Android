@@ -1,5 +1,6 @@
 package ch.bfh.mobicomp.smuoy;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -16,7 +17,11 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static ch.bfh.mobicomp.smuoy.SmuoyService.smuoyService;
 
@@ -26,7 +31,7 @@ public class MapActivity extends ActionBarActivity {
             new LatLng(47.034301, 7.060707),
             new LatLng(47.136459, 7.243011)
     );
-
+    private Map<String, String> markerSmuoyMap = new HashMap<>();
     private MapFragment mapFragment;
     private GoogleMap map;
 
@@ -71,12 +76,24 @@ public class MapActivity extends ActionBarActivity {
                             Measurement data = sensor.latestData;
                             if (data instanceof GpsMeasurement) {
                                 GpsMeasurement gpsData = (GpsMeasurement) data;
-                                map.addMarker(new MarkerOptions()
+                                Marker marker = map.addMarker(new MarkerOptions()
                                         .position(new LatLng(gpsData.lat, gpsData.lon))
                                         .title(smuoy.name));
+                                marker.showInfoWindow();
+                                markerSmuoyMap.put(marker.getId(), smuoy.id);
+                                break; // even if there's more than one GPS measurement, we're not interested
                             }
                         }
                     }
+                    map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                        @Override
+                        public void onInfoWindowClick(Marker marker) {
+                            String smuoyId = markerSmuoyMap.get(marker.getId());
+                            Intent intent = new Intent(MapActivity.this, SmuoyListActivity.class);
+                            intent.putExtra(SmuoyListActivity.SMUOY_ID, smuoyId);
+                            startActivity(intent);
+                        }
+                    });
                 } else {
                     Toast.makeText(getApplicationContext(),
                             R.string.error_loading_map,

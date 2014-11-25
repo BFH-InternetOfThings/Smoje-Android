@@ -5,13 +5,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static ch.bfh.mobicomp.smuoy.Utils.num;
-import static ch.bfh.mobicomp.smuoy.Utils.str;
+import java.io.Serializable;
+
+import static ch.bfh.mobicomp.smuoy.utils.Utils.num;
+import static ch.bfh.mobicomp.smuoy.utils.Utils.str;
 
 /**
  * Created by chris on 07.11.14.
  */
-public class Sensor {
+public class Sensor implements Serializable {
     public final String id;
     public final String name;
     public final String description;

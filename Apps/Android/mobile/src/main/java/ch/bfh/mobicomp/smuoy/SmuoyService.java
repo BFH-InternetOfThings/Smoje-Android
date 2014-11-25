@@ -9,7 +9,7 @@ import org.json.JSONObject;
 import java.util.LinkedList;
 import java.util.List;
 
-import static ch.bfh.mobicomp.smuoy.Utils.str;
+import static ch.bfh.mobicomp.smuoy.utils.Utils.str;
 
 /**
  * Created by chris on 14.11.14.

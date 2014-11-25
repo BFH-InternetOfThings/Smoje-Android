@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import ch.bfh.mobicomp.smuoy.entities.*;
+import ch.bfh.mobicomp.smuoy.utils.DownloadImageTask;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.GoogleMap;
@@ -21,7 +22,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import static ch.bfh.mobicomp.smuoy.SmuoyService.smuoyService;
-import static ch.bfh.mobicomp.smuoy.Utils.direction;
+import static ch.bfh.mobicomp.smuoy.utils.Utils.direction;
 
 /**
  * A fragment representing a single Smuoy detail screen.
