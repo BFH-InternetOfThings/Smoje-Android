@@ -3,6 +3,7 @@ package ch.bfh.mobicomp.smuoy;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -40,7 +41,8 @@ public class SmuoyListActivity extends ActionBarActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_smuoy_list);
 
-        getSupportActionBar().setIcon(R.drawable.ic_launcher);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         if (findViewById(R.id.smuoy_detail_container) != null) {
             // The detail container view will be present only in the
@@ -102,6 +104,8 @@ public class SmuoyListActivity extends ActionBarActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_show_map:
+//                ActivityOptionsCompat options = ActivityOptionsCompat.make
+//                startActivity(new Intent(this, MapActivity.class), options);
                 startActivity(new Intent(this, MapActivity.class));
                 return true;
             default:
