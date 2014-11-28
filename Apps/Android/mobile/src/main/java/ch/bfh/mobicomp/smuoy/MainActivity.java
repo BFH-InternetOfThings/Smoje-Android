@@ -1,7 +1,6 @@
 package ch.bfh.mobicomp.smuoy;
 
 import android.app.ActionBar;
-import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -18,6 +17,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -46,7 +46,7 @@ public class MainActivity extends ActionBarActivity
      */
     private CharSequence title;
     private Map<String, Smuoy> markerSmuoyMap = new HashMap<>();
-    private MapFragment mapFragment;
+    private SupportMapFragment mapFragment;
     private GoogleMap map;
 
     @Override
@@ -58,7 +58,7 @@ public class MainActivity extends ActionBarActivity
         setSupportActionBar(toolbar);
 
         navigationDrawerFragment = (NavigationDrawerFragment)
-                getFragmentManager().findFragmentById(R.id.navigation_drawer);
+                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         title = getTitle();
 
         // Set up the drawer.
@@ -67,10 +67,10 @@ public class MainActivity extends ActionBarActivity
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
         if (savedInstanceState == null) {
-            mapFragment = MapFragment.newInstance();
+            mapFragment = SupportMapFragment.newInstance();
 
-            getFragmentManager().beginTransaction()
-                    .add(R.id.container, mapFragment, "map")
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, mapFragment, "map")
                     .commit();
         }
     }
@@ -110,12 +110,7 @@ public class MainActivity extends ActionBarActivity
                     map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                         @Override
                         public void onInfoWindowClick(Marker marker) {
-                            Smuoy smuoy = markerSmuoyMap.get(marker.getId());
-
-                            getFragmentManager().beginTransaction()
-                                    .replace(R.id.container, SmuoyDetailFragment.newInstance(smuoy))
-                                    .addToBackStack(smuoy.id)
-                                    .commit();
+                            showDetail(markerSmuoyMap.get(marker.getId()));
                         }
                     });
                 } else {
@@ -132,9 +127,11 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public void onNavigationDrawerItemSelected(Smuoy smuoy) {
-        // update the main content by replacing fragments
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction()
+        showDetail(smuoy);
+    }
+
+    private void showDetail(Smuoy smuoy) {
+        getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, SmuoyDetailFragment.newInstance(smuoy))
                 .addToBackStack(smuoy.id)
                 .commit();

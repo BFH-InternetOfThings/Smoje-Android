@@ -1,7 +1,7 @@
 package ch.bfh.mobicomp.smuoy;
 
-import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,9 +26,6 @@ import static ch.bfh.mobicomp.smuoy.utils.Utils.direction;
 
 /**
  * A fragment representing a single Smuoy detail screen.
- * This fragment is either contained in a {@link SmuoyListActivity}
- * in two-pane mode (on tablets) or a {@link SmuoyDetailActivity}
- * on handsets.
  */
 public class SmuoyDetailFragment extends Fragment {
     /**
@@ -41,7 +38,7 @@ public class SmuoyDetailFragment extends Fragment {
      * The dummy content this fragment is presenting.
      */
     private Smuoy item;
-    private MapFragment mapFragment;
+    private SmuoyMapFragment mapFragment;
     private MarkerOptions mapMarker;
 
     @Override
@@ -92,10 +89,9 @@ public class SmuoyDetailFragment extends Fragment {
             mapOptions.mapType(GoogleMap.MAP_TYPE_NORMAL);
             mapOptions.camera(new CameraPosition(new LatLng(gpsMeasurement.lat, gpsMeasurement.lon), 12, 0, 0));
 
-            mapFragment = MapFragment.newInstance(mapOptions);
+            mapFragment = SmuoyMapFragment.newInstance(new MarkerOptions().position(new LatLng(gpsMeasurement.lat, gpsMeasurement.lon)));
             getFragmentManager().beginTransaction().add(R.id.map_container, mapFragment).commit();
 
-            mapMarker = new MarkerOptions().position(new LatLng(gpsMeasurement.lat, gpsMeasurement.lon));
         } else if (measurement instanceof SimpleMeasurement) {
             SimpleMeasurement simple = (SimpleMeasurement) measurement;
             if ("temperature".equals(simple.sensor.type)) {
@@ -151,24 +147,6 @@ public class SmuoyDetailFragment extends Fragment {
 
         if (mapFragment == null || mapMarker == null) {
             return;
-        }
-
-        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity());
-        if (resultCode == ConnectionResult.SUCCESS) {
-            GoogleMap map = mapFragment.getMap();
-            if (map != null) {
-                map.setMyLocationEnabled(true);
-                map.getUiSettings().setMyLocationButtonEnabled(false);
-                map.getUiSettings().setZoomControlsEnabled(false);
-                map.getUiSettings().setAllGesturesEnabled(false);
-                map.addMarker(mapMarker);
-            } else {
-                Toast.makeText(getActivity(),
-                        R.string.error_loading_map,
-                        Toast.LENGTH_LONG).show();
-            }
-        } else {
-            GooglePlayServicesUtil.getErrorDialog(resultCode, getActivity(), 1);
         }
     }
 
