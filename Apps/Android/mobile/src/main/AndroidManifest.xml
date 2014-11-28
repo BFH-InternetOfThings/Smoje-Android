@@ -28,22 +28,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="ch.bfh.mobicomp.smuoy.SmuoyDetailActivity"
-            android:label="@string/title_smuoy_detail"
-            android:parentActivityName="ch.bfh.mobicomp.smuoy.SmuoyListActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".SmuoyListActivity" />
-        </activity>
-        <activity
-            android:name="ch.bfh.mobicomp.smuoy.MapActivity"
-            android:label="@string/title_activity_map"
-            android:parentActivityName="ch.bfh.mobicomp.smuoy.SmuoyListActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="ch.bfh.mobicomp.smuoy.SmuoyListActivity" />
-        </activity>
     </application>
 
 </manifest>
