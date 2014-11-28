@@ -51,7 +51,7 @@ public class SmuoyDetailFragment extends Fragment {
         // Retain this fragment across configuration changes.
         setRetainInstance(true);
 
-        if (getArguments().containsKey(ARG_ITEM_ID)) {
+        if (item == null && getArguments().containsKey(ARG_ITEM_ID)) {
             item = smuoyService.getSmuoy(getArguments().getString(ARG_ITEM_ID));
         }
     }
@@ -174,6 +174,12 @@ public class SmuoyDetailFragment extends Fragment {
 
     private void setText(View parent, int id, CharSequence text) {
         ((TextView) parent.findViewById(id)).setText(text);
+    }
+
+    public static SmuoyDetailFragment newInstance(Smuoy smuoy){
+        SmuoyDetailFragment fragment = new SmuoyDetailFragment();
+        fragment.item = smuoy;
+        return fragment;
     }
 
 }

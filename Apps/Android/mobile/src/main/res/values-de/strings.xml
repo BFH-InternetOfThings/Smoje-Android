@@ -13,4 +13,6 @@
     <string name="temperature_water">Wassertemperatur</string>
     <string name="temperature_air">Lufttemperatur</string>
     <string name="temperature">Temperatur</string>
+    <string name="navigation_drawer_close">Seitennavigation schließen</string>
+    <string name="navigation_drawer_open">Seitennavigation öffnen</string>
 </resources>

@@ -14,5 +14,7 @@
     <string name="temperature_water">Water Temperature</string>
     <string name="temperature_air">Air Temperature</string>
     <string name="temperature">Temperature</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 
 </resources>
