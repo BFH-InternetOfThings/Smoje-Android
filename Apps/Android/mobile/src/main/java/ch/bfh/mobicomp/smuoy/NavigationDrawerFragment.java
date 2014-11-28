@@ -12,11 +12,12 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 import ch.bfh.mobicomp.smuoy.entities.Smuoy;
 
 import static ch.bfh.mobicomp.smuoy.SmuoyService.smuoyService;
@@ -63,6 +64,7 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
 
         // Read in the flag indicating whether or not the user has demonstrated awareness of the
         // drawer. See PREF_USER_LEARNED_DRAWER for details.
@@ -130,42 +132,6 @@ public class NavigationDrawerFragment extends Fragment {
         // ActionBarDrawerToggle ties together the the proper interactions
         // between the navigation drawer and the action bar app icon.
         drawerToggle = new ActionBarDrawerToggle(getActivity(), drawerLayout, R.drawable.ic_drawer, R.drawable.ic_drawer);
-//        drawerToggle = new ActionBarDrawerToggle(
-//                getActivity(),                    /* host Activity */
-//                NavigationDrawerFragment.this.drawerLayout,                    /* DrawerLayout object */
-//                R.drawable.ic_drawer,             /* nav drawer image to replace 'Up' caret */
-//                R.string.navigation_drawer_open,  /* "open drawer" description for accessibility */
-//                R.string.navigation_drawer_close  /* "close drawer" description for accessibility */
-//        ) {
-//            @Override
-//            public void onDrawerClosed(View drawerView) {
-//                super.onDrawerClosed(drawerView);
-//                if (!isAdded()) {
-//                    return;
-//                }
-//
-//                getActivity().invalidateOptionsMenu(); // calls onPrepareOptionsMenu()
-//            }
-//
-//            @Override
-//            public void onDrawerOpened(View drawerView) {
-//                super.onDrawerOpened(drawerView);
-//                if (!isAdded()) {
-//                    return;
-//                }
-//
-//                if (!userLearnedDrawer) {
-//                    // The user manually opened the drawer; store this flag to prevent auto-showing
-//                    // the navigation drawer automatically in the future.
-//                    userLearnedDrawer = true;
-//                    SharedPreferences sp = PreferenceManager
-//                            .getDefaultSharedPreferences(getActivity());
-//                    sp.edit().putBoolean(PREF_USER_LEARNED_DRAWER, true).apply();
-//                }
-//
-//                getActivity().invalidateOptionsMenu(); // calls onPrepareOptionsMenu()
-//            }
-//        };
 
         // If the user hasn't 'learned' about the drawer, open it to introduce them to the drawer,
         // per the navigation drawer design guidelines.
@@ -224,42 +190,6 @@ public class NavigationDrawerFragment extends Fragment {
         super.onConfigurationChanged(newConfig);
         // Forward the new configuration the drawer toggle component.
         drawerToggle.onConfigurationChanged(newConfig);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        // If the drawer is open, show the global app actions in the action bar. See also
-        // showGlobalContextActionBar, which controls the top-left area of the action bar.
-        if (drawerLayout != null && isDrawerOpen()) {
-            inflater.inflate(R.menu.global, menu);
-            showGlobalContextActionBar();
-        }
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (drawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-
-        if (item.getItemId() == R.id.action_show_map) {
-            Toast.makeText(getActivity(), "Example action.", Toast.LENGTH_SHORT).show();
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * Per the navigation drawer design guidelines, updates the action bar to show the global app
-     * 'context', rather than just what's in the current screen.
-     */
-    private void showGlobalContextActionBar() {
-        ActionBar actionBar = getActionBar();
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setTitle(R.string.app_name);
     }
 
     private ActionBar getActionBar() {

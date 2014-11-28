@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
                                     xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                                    xmlns:tools="http://schemas.android.com/tools"
                                     android:id="@+id/card_view"
                                     android:padding="16dp"
                                     android:layout_marginBottom="@dimen/default_spacing"
@@ -45,7 +46,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="4dp"
                     android:layout_marginStart="4dp"
-                    android:text="0km/h"/>
+                    android:text="— km/h"
+                    tools:ignore="HardcodedText"/>
 
             <TextView
                     android:id="@+id/direction_label"
@@ -60,7 +62,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="4dp"
                     android:layout_marginStart="4dp"
-                    android:text="360˚"/>
+                    android:text="— ˚"
+                    tools:ignore="HardcodedText"/>
 
         </GridLayout>
     </RelativeLayout>

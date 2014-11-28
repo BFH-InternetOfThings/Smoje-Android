@@ -9,14 +9,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 import ch.bfh.mobicomp.smuoy.entities.*;
 import ch.bfh.mobicomp.smuoy.utils.DownloadImageTask;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -38,8 +34,8 @@ public class SmuoyDetailFragment extends Fragment {
      * The dummy content this fragment is presenting.
      */
     private Smuoy item;
-    private SmuoyMapFragment mapFragment;
-    private MarkerOptions mapMarker;
+
+    private CharSequence originalTitle;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,8 +54,8 @@ public class SmuoyDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         LinearLayout rootView = (LinearLayout) inflater.inflate(R.layout.fragment_smuoy_detail, container, false);
 
-        // Show the dummy content as text in a TextView.
         if (item != null) {
+            originalTitle = getActivity().getTitle();
             getActivity().setTitle(item.name);
             for (Sensor sensor : item.sensors) {
                 addCard(inflater, rootView, sensor.latestData);
@@ -67,6 +63,12 @@ public class SmuoyDetailFragment extends Fragment {
         }
 
         return rootView;
+    }
+
+    @Override
+    public void onDetach() {
+        getActivity().setTitle(originalTitle);
+        super.onDetach();
     }
 
     private void addCard(LayoutInflater inflater, final ViewGroup parentView, Measurement measurement) {
@@ -89,7 +91,7 @@ public class SmuoyDetailFragment extends Fragment {
             mapOptions.mapType(GoogleMap.MAP_TYPE_NORMAL);
             mapOptions.camera(new CameraPosition(new LatLng(gpsMeasurement.lat, gpsMeasurement.lon), 12, 0, 0));
 
-            mapFragment = SmuoyMapFragment.newInstance(new MarkerOptions().position(new LatLng(gpsMeasurement.lat, gpsMeasurement.lon)));
+            SmuoyMapFragment mapFragment = SmuoyMapFragment.newInstance(new MarkerOptions().position(new LatLng(gpsMeasurement.lat, gpsMeasurement.lon)));
             getFragmentManager().beginTransaction().add(R.id.map_container, mapFragment).commit();
 
         } else if (measurement instanceof SimpleMeasurement) {
@@ -141,20 +143,11 @@ public class SmuoyDetailFragment extends Fragment {
         return (CardView) inflater.inflate(id, parentView, false);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        if (mapFragment == null || mapMarker == null) {
-            return;
-        }
-    }
-
     private void setText(View parent, int id, CharSequence text) {
         ((TextView) parent.findViewById(id)).setText(text);
     }
 
-    public static SmuoyDetailFragment newInstance(Smuoy smuoy){
+    public static SmuoyDetailFragment newInstance(Smuoy smuoy) {
         SmuoyDetailFragment fragment = new SmuoyDetailFragment();
         fragment.item = smuoy;
         return fragment;

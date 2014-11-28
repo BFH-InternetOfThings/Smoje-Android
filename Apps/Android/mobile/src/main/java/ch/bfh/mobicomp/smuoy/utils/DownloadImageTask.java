@@ -12,8 +12,8 @@ import java.io.InputStream;
 import java.net.URL;
 
 public class DownloadImageTask extends AsyncTask<URL, Void, Bitmap> {
-    private String identifier;
-    private ImageView imageView;
+    private final String identifier;
+    private final ImageView imageView;
     private long cacheTimeInMilliSeconds = 900000; // 15 minutes by default?
 
     public DownloadImageTask(String identifier, ImageView imageView, long cacheTimeInSeconds) {

@@ -1,5 +1,6 @@
 package ch.bfh.mobicomp.smuoy;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -22,6 +23,12 @@ public class SmuoyMapFragment extends Fragment {
     private SupportMapFragment fragment;
     private GoogleMap map;
     private MarkerOptions marker;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
