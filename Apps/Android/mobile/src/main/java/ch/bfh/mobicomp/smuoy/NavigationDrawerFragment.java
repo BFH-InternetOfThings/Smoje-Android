@@ -88,8 +88,8 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        drawerListView = (ListView) inflater.inflate(
-                R.layout.fragment_navigation_drawer, container, false);
+        View drawerView = inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
+        drawerListView = (ListView) drawerView.findViewById(R.id.smuoy_list);
         drawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -102,7 +102,7 @@ public class NavigationDrawerFragment extends Fragment {
                 android.R.id.text1,
                 smuoyService.getSmuoys()));
         drawerListView.setItemChecked(currentSelectedPosition, true);
-        return drawerListView;
+        return drawerView;
     }
 
     public boolean isDrawerOpen() {
