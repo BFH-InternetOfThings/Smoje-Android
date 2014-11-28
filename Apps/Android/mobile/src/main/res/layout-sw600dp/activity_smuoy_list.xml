@@ -29,7 +29,7 @@
             android:layout_below="@+id/toolbar"
             android:layout_width="150dp"
             android:layout_height="0dp"
-            android:layout_margin="16dp"
+            android:layout_margin="@dimen/activity_margin"
             tools:layout="@android:layout/list_content"/>
 
     <ScrollView
