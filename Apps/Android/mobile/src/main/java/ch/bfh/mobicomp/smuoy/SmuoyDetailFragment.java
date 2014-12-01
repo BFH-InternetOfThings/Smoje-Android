@@ -52,13 +52,14 @@ public class SmuoyDetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        LinearLayout rootView = (LinearLayout) inflater.inflate(R.layout.fragment_smuoy_detail, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_smuoy_detail, container, false);
+        LinearLayout layout = (LinearLayout) rootView.findViewById(R.id.smuoy_detail);
 
         if (item != null) {
             originalTitle = getActivity().getTitle();
             getActivity().setTitle(item.name);
             for (Sensor sensor : item.sensors) {
-                addCard(inflater, rootView, sensor.latestData);
+                addCard(inflater, layout, sensor.latestData);
             }
         }
 

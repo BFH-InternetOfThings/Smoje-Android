@@ -50,6 +50,7 @@ public class MainActivity extends ActionBarActivity
 
         if (savedInstanceState == null) {
             mapFragment = SupportMapFragment.newInstance();
+            mapFragment.setRetainInstance(true);
 
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.container, mapFragment, "map")
@@ -63,7 +64,10 @@ public class MainActivity extends ActionBarActivity
 
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
         if (resultCode == ConnectionResult.SUCCESS) {
-            if (map == null) {
+            if (mapFragment == null) {
+                mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentByTag("map");
+            }
+            if (map == null && mapFragment != null) {
                 map = mapFragment.getMap();
                 if (map != null) {
                     map.setMyLocationEnabled(true);

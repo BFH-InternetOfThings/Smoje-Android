@@ -1,13 +1,11 @@
 package ch.bfh.mobicomp.smuoy;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.GoogleMap;
@@ -66,15 +64,12 @@ public class SmuoyMapFragment extends Fragment {
             map.getUiSettings().setZoomControlsEnabled(false);
             map.getUiSettings().setAllGesturesEnabled(false);
             map.addMarker(marker);
-        } else {
-            Toast.makeText(getActivity(),
-                    R.string.error_loading_map,
-                    Toast.LENGTH_LONG).show();
         }
     }
 
     public static SmuoyMapFragment newInstance(MarkerOptions marker) {
         SmuoyMapFragment f = new SmuoyMapFragment();
+        f.setRetainInstance(true);
         f.marker = marker;
         return f;
     }
