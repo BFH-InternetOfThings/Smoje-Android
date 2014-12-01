@@ -6,6 +6,8 @@
         <item name="android:windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
 
+        <item name="android:activatedBackgroundIndicator">@color/secondary</item>
+
         <!-- Main theme colors -->
         <!--   your app branding color for the app bar -->
         <item name="android:colorPrimary">@color/primary</item>
