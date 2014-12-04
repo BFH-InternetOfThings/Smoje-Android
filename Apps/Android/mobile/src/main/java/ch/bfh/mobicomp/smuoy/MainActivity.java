@@ -20,6 +20,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static ch.bfh.mobicomp.smuoy.SmuoyService.smuoyService;
@@ -79,20 +80,26 @@ public class MainActivity extends ActionBarActivity
                             map.animateCamera(CameraUpdateFactory.newLatLngBounds(LAKE_BIEL, 0));
                         }
                     });
-                    for (Smuoy smuoy : smuoyService.getSmuoys()) {
-                        for (Sensor sensor : smuoy.sensors) {
-                            Measurement data = sensor.latestData;
-                            if (data instanceof GpsMeasurement) {
-                                GpsMeasurement gpsData = (GpsMeasurement) data;
-                                Marker marker = map.addMarker(new MarkerOptions()
-                                        .position(new LatLng(gpsData.lat, gpsData.lon))
-                                        .title(smuoy.name));
-                                marker.showInfoWindow();
-                                markerSmuoyMap.put(marker.getId(), smuoy);
-                                break; // even if there's more than one GPS measurement, we're not interested
+                    smuoyService.addListener(new SmuoyService.SmuoyLoadedListener() {
+                        @Override
+                        public void onSmuoyListLoaded(List<Smuoy> smuoys) {
+                            for (Smuoy smuoy : smuoys) {
+                                for (Sensor sensor : smuoy.sensors) {
+                                    Measurement data = sensor.latestData;
+                                    if (data instanceof GpsMeasurement) {
+                                        GpsMeasurement gpsData = (GpsMeasurement) data;
+                                        Marker marker = map.addMarker(new MarkerOptions()
+                                                .position(new LatLng(gpsData.lat, gpsData.lon))
+                                                .title(smuoy.name));
+                                        marker.showInfoWindow();
+                                        markerSmuoyMap.put(marker.getId(), smuoy);
+                                        break; // even if there's more than one GPS measurement, we're not interested
+                                    }
+                                }
                             }
                         }
-                    }
+                    });
+                    smuoyService.loadSmuoys();
                     map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                         @Override
                         public void onInfoWindowClick(Marker marker) {

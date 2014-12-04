@@ -21,6 +21,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import ch.bfh.mobicomp.smuoy.entities.Smuoy;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static ch.bfh.mobicomp.smuoy.SmuoyService.SmuoyLoadedListener;
 import static ch.bfh.mobicomp.smuoy.SmuoyService.smuoyService;
 
 /**
@@ -103,7 +107,18 @@ public class NavigationDrawerFragment extends Fragment {
                 getActivity(),
                 android.R.layout.simple_list_item_activated_1,
                 android.R.id.text1,
-                smuoyService.getSmuoys()));
+                new ArrayList<Smuoy>(0)));
+        smuoyService.addListener(new SmuoyLoadedListener() {
+            @Override
+            public void onSmuoyListLoaded(List<Smuoy> smuoys) {
+                drawerListView.setAdapter(new ArrayAdapter<>(
+                        getActivity(),
+                        android.R.layout.simple_list_item_activated_1,
+                        android.R.id.text1,
+                        smuoys));
+            }
+        });
+        smuoyService.loadSmuoys();
         drawerListView.setItemChecked(currentSelectedPosition, true);
         return drawerView;
     }

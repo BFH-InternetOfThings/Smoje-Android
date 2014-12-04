@@ -1,51 +1,93 @@
 package ch.bfh.mobicomp.smuoy;
 
-import android.util.Log;
+import android.os.AsyncTask;
 import ch.bfh.mobicomp.smuoy.entities.Smuoy;
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-
-import static ch.bfh.mobicomp.smuoy.utils.Utils.str;
+import java.util.Map;
 
 /**
  * Created by chris on 14.11.14.
  */
-public class SmuoyService {
+public class SmuoyService extends AsyncTask<String, Void, List<Smuoy>> {
+    private String serviceUrl = "http://178.62.163.199/smoje/index.php/Measurement";
     public static final SmuoyService smuoyService = new SmuoyService();
+
+    private volatile boolean loading = false;
+    private List<SmuoyLoadedListener> listeners = new LinkedList<>();
+
+    private Map<String, Smuoy> loadedSmuoys = new HashMap<>();
 
     private SmuoyService() {
     }
 
-    public List<Smuoy> getSmuoys() {
-        List<Smuoy> result = new LinkedList<>();
+    @Override
+    protected List<Smuoy> doInBackground(String... params) {
         try {
-            JSONArray jsonArray = new JSONArray(json);
-            for (int i = 0; i < jsonArray.length(); i++) {
-                result.add(new Smuoy(jsonArray.getJSONObject(i)));
+            List<Smuoy> result = new LinkedList<>();
+
+//                    HttpClient httpclient = new DefaultHttpClient();
+//                    HttpResponse response = httpclient.execute(new HttpGet(params[0]));
+//                    StatusLine statusLine = response.getStatusLine();
+            if (true) { //statusLine.getStatusCode() == HttpStatus.SC_OK) {
+//                        ByteArrayOutputStream out = new ByteArrayOutputStream();
+//                        response.getEntity().writeTo(out);
+//                        out.close();
+                String responseString = json; // out.toString();
+
+                JSONArray jsonArray = new JSONArray(responseString);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    result.add(new Smuoy(jsonArray.getJSONObject(i)));
+                }
+            } else {
+                //Closes the connection.
+//                        response.getEntity().getContent().close();
+//                        throw new IOException(statusLine.getReasonPhrase());
             }
-        } catch (JSONException e) {
-            Log.e("SmuoyService", "getSmuoys", e);
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
-        return result;
     }
 
-    public Smuoy getSmuoy(String id) {
-        try {
-            JSONArray jsonArray = new JSONArray(json);
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject smuoyObject = jsonArray.getJSONObject(i);
-                if (id.equals(str(smuoyObject, "id", ""))) {
-                    return new Smuoy(smuoyObject);
-                }
-            }
-        } catch (JSONException e) {
-            Log.e("SmuoyService", "getSmuoys", e);
+    @Override
+    protected void onPostExecute(List<Smuoy> smuoys) {
+        updateSmuoys(smuoys);
+        loading = false;
+        for (SmuoyLoadedListener listener : listeners) {
+            listener.onSmuoyListLoaded(smuoys);
         }
-        return null;
+    }
+
+    public synchronized void loadSmuoys() {
+        if (loading) {
+            return;
+        }
+        loading = true;
+        execute(serviceUrl);
+    }
+
+    private synchronized void updateSmuoys(List<Smuoy> newSmuoys) {
+        loadedSmuoys.clear();
+        for (Smuoy smuoy : newSmuoys) {
+            loadedSmuoys.put(smuoy.id, smuoy);
+        }
+    }
+
+    public void addListener(SmuoyLoadedListener listener) {
+        listeners.add(listener);
+    }
+
+    public synchronized Smuoy getSmuoy(String id) {
+        return loadedSmuoys.get(id);
+    }
+
+    public static interface SmuoyLoadedListener {
+        public void onSmuoyListLoaded(List<Smuoy> smuoys);
     }
 
     private String json = "[\n" +
