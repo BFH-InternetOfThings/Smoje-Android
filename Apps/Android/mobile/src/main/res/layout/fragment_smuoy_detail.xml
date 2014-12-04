@@ -9,6 +9,7 @@
                   android:layout_height="wrap_content"
                   android:padding="@dimen/default_spacing"
                   android:textIsSelectable="true"
+                  android:animateLayoutChanges="true"
                   tools:context=".SmuoyDetailFragment"
                   android:orientation="vertical"/>
 

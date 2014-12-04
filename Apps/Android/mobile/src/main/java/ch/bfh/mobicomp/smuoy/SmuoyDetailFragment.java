@@ -82,7 +82,7 @@ public class SmuoyDetailFragment extends Fragment {
         } else if (measurement instanceof ImageMeasurement) {
             card = getCard(inflater, parentView, R.layout.data_card_image);
             ImageMeasurement imageMeasurement = (ImageMeasurement) measurement;
-            new DownloadImageTask(item.id, (ImageView) card.findViewById(R.id.image), imageMeasurement.sensor.delay).execute(imageMeasurement.url);
+            new DownloadImageTask(item.id, card, imageMeasurement.sensor.delay).execute(imageMeasurement.url);
         } else if (measurement instanceof GpsMeasurement) {
             card = getCard(inflater, parentView, R.layout.data_card_map);
 
