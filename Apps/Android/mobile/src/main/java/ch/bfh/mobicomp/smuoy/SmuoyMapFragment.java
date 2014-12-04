@@ -57,7 +57,7 @@ public class SmuoyMapFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (map == null) {
+        if (map == null && fragment != null) {
             map = fragment.getMap();
             map.setMyLocationEnabled(true);
             map.getUiSettings().setMyLocationButtonEnabled(false);

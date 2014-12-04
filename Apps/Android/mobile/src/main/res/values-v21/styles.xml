@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppTheme" parent="@style/Theme.AppCompat.Light">
-
-        <item name="android:windowNoTitle">true</item>
-        <item name="windowActionBar">false</item>
-
-        <item name="android:activatedBackgroundIndicator">@color/secondary</item>
+    <style name="AppTheme" parent="AppTheme.Base">
 
         <!-- Main theme colors -->
         <!--   your app branding color for the app bar -->
@@ -23,7 +18,6 @@
         <item name="android:windowSharedElementExitTransition">@android:transition/move</item>
 
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:fitsSystemWindows">true</item>
         <!--<item name="android:statusBarColor">@android:color/transparent</item>-->
 
     </style>
