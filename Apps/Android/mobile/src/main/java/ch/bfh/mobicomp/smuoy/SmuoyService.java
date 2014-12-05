@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by chris on 14.11.14.
+ * SmuoyService asynchronously loads Smuoys from the REST web service (this part is still to do).
+ * To get smuoys, register a SmuoyLoadedListener and call {@link #loadSmuoys()}.
  */
 public class SmuoyService extends AsyncTask<String, Void, List<Smuoy>> {
     private String serviceUrl = "http://178.62.163.199/smoje/index.php/Measurement";
@@ -82,11 +83,14 @@ public class SmuoyService extends AsyncTask<String, Void, List<Smuoy>> {
         listeners.add(listener);
     }
 
-    public synchronized Smuoy getSmuoy(String id) {
+    public Smuoy getSmuoy(String id) {
         return loadedSmuoys.get(id);
     }
 
     public static interface SmuoyLoadedListener {
+        /**
+         * This callback method will be executed on the GUI thread.
+         */
         public void onSmuoyListLoaded(List<Smuoy> smuoys);
     }
 

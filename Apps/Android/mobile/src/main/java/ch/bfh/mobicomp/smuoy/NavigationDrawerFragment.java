@@ -17,11 +17,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import ch.bfh.mobicomp.smuoy.entities.Smuoy;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static ch.bfh.mobicomp.smuoy.SmuoyService.SmuoyLoadedListener;
@@ -103,19 +101,14 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
-        drawerListView.setAdapter(new ArrayAdapter<>(
-                getActivity(),
-                android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1,
-                new ArrayList<Smuoy>(0)));
+        drawerListView.setAdapter(new DrawerAdapter(getActivity(),
+                new DrawerItemGroup(0, new DrawerItem(getString(R.string.map_view), R.drawable.ic_action_map))));
         smuoyService.addListener(new SmuoyLoadedListener() {
             @Override
             public void onSmuoyListLoaded(List<Smuoy> smuoys) {
-                drawerListView.setAdapter(new ArrayAdapter<>(
-                        getActivity(),
-                        android.R.layout.simple_list_item_activated_1,
-                        android.R.id.text1,
-                        smuoys));
+                drawerListView.setAdapter(new DrawerAdapter(getActivity(),
+                        new DrawerItemGroup(0, new DrawerItem(getString(R.string.map_view), R.drawable.ic_action_map)),
+                        new DrawerItemGroup(R.string.smuoys, smuoys)));
             }
         });
         smuoyService.loadSmuoys();
@@ -194,8 +187,12 @@ public class NavigationDrawerFragment extends Fragment {
             drawerLayout.closeDrawer(fragmentContainerView);
         }
         if (callbacks != null && drawerListView != null) {
-            callbacks.onNavigationDrawerItemSelected((Smuoy) drawerListView.getAdapter().getItem(position));
+            callbacks.onNavigationDrawerItemSelected(getSmuoyAt(position));
         }
+    }
+
+    private Smuoy getSmuoyAt(int position) {
+        return (Smuoy) ((DrawerItem) drawerListView.getAdapter().getItem(position)).getData();
     }
 
     @Override

@@ -37,7 +37,7 @@ public class DownloadImageTask extends AsyncTask<URL, Void, Bitmap> {
 
     protected Bitmap doInBackground(URL... urls) {
         try {
-            File cacheFile = new File(imageView.getContext().getExternalCacheDir(), identifier);
+            File cacheFile = new File(imageView.getContext().getCacheDir(), identifier);
             if (!cacheFile.exists() || cacheFile.lastModified() < System.currentTimeMillis() - cacheTimeInMilliSeconds) {
                 InputStream in = urls[0].openStream();
                 FileOutputStream out = new FileOutputStream(cacheFile);
