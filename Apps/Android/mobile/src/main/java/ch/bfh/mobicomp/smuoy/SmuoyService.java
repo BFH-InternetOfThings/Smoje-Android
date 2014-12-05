@@ -4,72 +4,43 @@ import android.os.AsyncTask;
 import ch.bfh.mobicomp.smuoy.entities.Smuoy;
 import org.json.JSONArray;
 
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
+import java.util.TreeMap;
+
+import static java.lang.System.currentTimeMillis;
 
 /**
  * SmuoyService asynchronously loads Smuoys from the REST web service (this part is still to do).
- * To get smuoys, register a SmuoyLoadedListener and call {@link #loadSmuoys()}.
+ * To get smuoys, register a SmuoyLoadedListener and call {@link #loadSmuoys(ch.bfh.mobicomp.smuoy.SmuoyService.SmuoyLoadedListener)}.
  */
-public class SmuoyService extends AsyncTask<String, Void, List<Smuoy>> {
-    private String serviceUrl = "http://178.62.163.199/smoje/index.php/Measurement";
+public class SmuoyService {
+    private static final long MIN_TIME_BETWEEN_REQUESTS = 10000;
+    private static final String SERVICE_URL = "http://178.62.163.199/smoje/index.php/Measurement";
     public static final SmuoyService smuoyService = new SmuoyService();
 
     private volatile boolean loading = false;
     private List<SmuoyLoadedListener> listeners = new LinkedList<>();
 
-    private Map<String, Smuoy> loadedSmuoys = new HashMap<>();
+    private TreeMap<String, Smuoy> loadedSmuoys = new TreeMap<>();
+
+    private long lastExecution;
 
     private SmuoyService() {
     }
 
-    @Override
-    protected List<Smuoy> doInBackground(String... params) {
-        try {
-            List<Smuoy> result = new LinkedList<>();
+    public synchronized void loadSmuoys(SmuoyLoadedListener listener) {
+        listeners.add(listener);
+        if (loading) return;
 
-//                    HttpClient httpclient = new DefaultHttpClient();
-//                    HttpResponse response = httpclient.execute(new HttpGet(params[0]));
-//                    StatusLine statusLine = response.getStatusLine();
-            if (true) { //statusLine.getStatusCode() == HttpStatus.SC_OK) {
-//                        ByteArrayOutputStream out = new ByteArrayOutputStream();
-//                        response.getEntity().writeTo(out);
-//                        out.close();
-                String responseString = json; // out.toString();
-
-                JSONArray jsonArray = new JSONArray(responseString);
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    result.add(new Smuoy(jsonArray.getJSONObject(i)));
-                }
-            } else {
-                //Closes the connection.
-//                        response.getEntity().getContent().close();
-//                        throw new IOException(statusLine.getReasonPhrase());
-            }
-            return result;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    @Override
-    protected void onPostExecute(List<Smuoy> smuoys) {
-        updateSmuoys(smuoys);
-        loading = false;
-        for (SmuoyLoadedListener listener : listeners) {
-            listener.onSmuoyListLoaded(smuoys);
-        }
-    }
-
-    public synchronized void loadSmuoys() {
-        if (loading) {
+        if (currentTimeMillis() - lastExecution < MIN_TIME_BETWEEN_REQUESTS) {
+            listener.onSmuoyListLoaded(loadedSmuoys.values());
             return;
         }
         loading = true;
-        execute(serviceUrl);
+        new LoadSmuoysTask().execute(SERVICE_URL);
+        lastExecution = currentTimeMillis();
     }
 
     private synchronized void updateSmuoys(List<Smuoy> newSmuoys) {
@@ -77,10 +48,6 @@ public class SmuoyService extends AsyncTask<String, Void, List<Smuoy>> {
         for (Smuoy smuoy : newSmuoys) {
             loadedSmuoys.put(smuoy.id, smuoy);
         }
-    }
-
-    public void addListener(SmuoyLoadedListener listener) {
-        listeners.add(listener);
     }
 
     public Smuoy getSmuoy(String id) {
@@ -91,7 +58,48 @@ public class SmuoyService extends AsyncTask<String, Void, List<Smuoy>> {
         /**
          * This callback method will be executed on the GUI thread.
          */
-        public void onSmuoyListLoaded(List<Smuoy> smuoys);
+        public void onSmuoyListLoaded(Collection<Smuoy> smuoys);
+    }
+
+    private class LoadSmuoysTask extends AsyncTask<String, Void, List<Smuoy>> {
+        @Override
+        protected List<Smuoy> doInBackground(String... params) {
+            try {
+                List<Smuoy> result = new LinkedList<>();
+
+//                    HttpClient httpclient = new DefaultHttpClient();
+//                    HttpResponse response = httpclient.execute(new HttpGet(params[0]));
+//                    StatusLine statusLine = response.getStatusLine();
+                if (true) { //statusLine.getStatusCode() == HttpStatus.SC_OK) {
+//                        ByteArrayOutputStream out = new ByteArrayOutputStream();
+//                        response.getEntity().writeTo(out);
+//                        out.close();
+                    String responseString = json; // out.toString();
+
+                    JSONArray jsonArray = new JSONArray(responseString);
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        result.add(new Smuoy(jsonArray.getJSONObject(i)));
+                    }
+                } else {
+                    //Closes the connection.
+//                        response.getEntity().getContent().close();
+//                        throw new IOException(statusLine.getReasonPhrase());
+                }
+                return result;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(List<Smuoy> smuoys) {
+            updateSmuoys(smuoys);
+            loading = false;
+            for (SmuoyLoadedListener listener : listeners) {
+                listener.onSmuoyListLoaded(smuoys);
+            }
+        }
     }
 
     private String json = "[\n" +

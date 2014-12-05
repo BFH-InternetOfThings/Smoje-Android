@@ -1,6 +1,7 @@
 package ch.bfh.mobicomp.smuoy;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
@@ -19,6 +20,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +29,7 @@ import static ch.bfh.mobicomp.smuoy.SmuoyService.smuoyService;
 
 
 public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+        implements NavigationDrawerFragment.FragmentAttacher {
 
     private final static LatLngBounds LAKE_BIEL = new LatLngBounds(
             new LatLng(47.034301, 7.060707),
@@ -80,9 +82,9 @@ public class MainActivity extends ActionBarActivity
                             map.animateCamera(CameraUpdateFactory.newLatLngBounds(LAKE_BIEL, 0));
                         }
                     });
-                    smuoyService.addListener(new SmuoyService.SmuoyLoadedListener() {
+                    smuoyService.loadSmuoys(new SmuoyService.SmuoyLoadedListener() {
                         @Override
-                        public void onSmuoyListLoaded(List<Smuoy> smuoys) {
+                        public void onSmuoyListLoaded(Collection<Smuoy> smuoys) {
                             for (Smuoy smuoy : smuoys) {
                                 for (Sensor sensor : smuoy.sensors) {
                                     Measurement data = sensor.latestData;
@@ -99,7 +101,6 @@ public class MainActivity extends ActionBarActivity
                             }
                         }
                     });
-                    smuoyService.loadSmuoys();
                     map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                         @Override
                         public void onInfoWindowClick(Marker marker) {
@@ -119,21 +120,26 @@ public class MainActivity extends ActionBarActivity
     }
 
     @Override
-    public void onNavigationDrawerItemSelected(Smuoy smuoy) {
-        showDetail(smuoy);
+    public void display(Fragment fragment, String title) {
+        if (fragment == null) {
+            fragment = mapFragment;
+            title = getString(R.string.app_name);
+        }
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, fragment)
+                .addToBackStack(title)
+                .commit();
+        setTitle(title);
     }
 
     private void showDetail(Smuoy smuoy) {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, SmuoyDetailFragment.newInstance(smuoy))
-                .addToBackStack(smuoy.id)
-                .commit();
+        display(SmuoyDetailFragment.newInstance(smuoy), smuoy.id);
     }
 
     @Override
     public void onBackPressed() {
-        if (getFragmentManager().getBackStackEntryCount() > 0) {
-            getFragmentManager().popBackStack();
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            getSupportFragmentManager().popBackStack();
         } else {
             super.onBackPressed();
         }

@@ -20,7 +20,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import ch.bfh.mobicomp.smuoy.entities.Smuoy;
 
-import java.util.List;
+import java.util.Collection;
 
 import static ch.bfh.mobicomp.smuoy.SmuoyService.SmuoyLoadedListener;
 import static ch.bfh.mobicomp.smuoy.SmuoyService.smuoyService;
@@ -44,14 +44,12 @@ public class NavigationDrawerFragment extends Fragment {
     private static final String PREF_USER_LEARNED_DRAWER = "navigation_drawer_learned";
 
     /**
-     * A pointer to the current callbacks instance (the Activity).
-     */
-    private NavigationDrawerCallbacks callbacks;
-
-    /**
+     * private NavigationDrawerCallbacks fragmentAttacher;
      * Helper component that ties the action bar to the navigation drawer.
      */
     private ActionBarDrawerToggle drawerToggle;
+
+    private FragmentAttacher fragmentAttacher;
 
     private DrawerLayout drawerLayout;
     private ListView drawerListView;
@@ -101,23 +99,31 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
-        drawerListView.setAdapter(new DrawerAdapter(getActivity(),
-                new DrawerItemGroup(0, new DrawerItem(getString(R.string.map_view), R.drawable.ic_action_map))));
-        smuoyService.addListener(new SmuoyLoadedListener() {
+        final DrawerItem.Listener<Smuoy> smuoyListener = new DrawerItem.Listener<Smuoy>() {
             @Override
-            public void onSmuoyListLoaded(List<Smuoy> smuoys) {
+            public void drawerItemSelected(Smuoy smuoy) {
+                fragmentAttacher.display(SmuoyDetailFragment.newInstance(smuoy), smuoy.id);
+            }
+        };
+        final DrawerItemGroup mapGroup = new DrawerItemGroup(0, new DrawerItem<>(getString(R.string.map_view), R.drawable.ic_action_map, new DrawerItem.Listener<Void>() {
+            @Override
+            public void drawerItemSelected(Void ignore) {
+                if (fragmentAttacher != null) {
+                    fragmentAttacher.display(null, null);
+                }
+            }
+        }));
+        drawerListView.setAdapter(new DrawerAdapter(getActivity(), mapGroup));
+        smuoyService.loadSmuoys(new SmuoyLoadedListener() {
+            @Override
+            public void onSmuoyListLoaded(Collection<Smuoy> smuoys) {
                 drawerListView.setAdapter(new DrawerAdapter(getActivity(),
-                        new DrawerItemGroup(0, new DrawerItem(getString(R.string.map_view), R.drawable.ic_action_map)),
-                        new DrawerItemGroup(R.string.smuoys, smuoys)));
+                        mapGroup,
+                        new DrawerItemGroup(R.string.smuoys, smuoys, smuoyListener)));
             }
         });
-        smuoyService.loadSmuoys();
         drawerListView.setItemChecked(currentSelectedPosition, true);
         return drawerView;
-    }
-
-    public boolean isDrawerOpen() {
-        return drawerLayout != null && drawerLayout.isDrawerOpen(fragmentContainerView);
     }
 
     /**
@@ -179,27 +185,22 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     private void selectItem(int position) {
-        currentSelectedPosition = position;
         if (drawerListView != null) {
+            drawerListView.setItemChecked(currentSelectedPosition, false);
             drawerListView.setItemChecked(position, true);
-        }
-        if (drawerLayout != null) {
-            drawerLayout.closeDrawer(fragmentContainerView);
-        }
-        if (callbacks != null && drawerListView != null) {
-            callbacks.onNavigationDrawerItemSelected(getSmuoyAt(position));
-        }
-    }
 
-    private Smuoy getSmuoyAt(int position) {
-        return (Smuoy) ((DrawerItem) drawerListView.getAdapter().getItem(position)).getData();
+            currentSelectedPosition = position;
+            if (((DrawerItem) drawerListView.getAdapter().getItem(position)).select()) {
+                drawerLayout.closeDrawer(fragmentContainerView);
+            }
+        }
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            callbacks = (NavigationDrawerCallbacks) activity;
+            fragmentAttacher = (FragmentAttacher) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException("Activity must implement NavigationDrawerCallbacks.");
         }
@@ -208,7 +209,7 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        callbacks = null;
+        fragmentAttacher = null;
     }
 
     @Override
@@ -236,13 +237,14 @@ public class NavigationDrawerFragment extends Fragment {
         return ((ActionBarActivity) getActivity()).getSupportActionBar();
     }
 
+
     /**
      * Callbacks interface that all activities using this fragment must implement.
      */
-    public static interface NavigationDrawerCallbacks {
+    public static interface FragmentAttacher {
         /**
          * Called when an item in the navigation drawer is selected.
          */
-        void onNavigationDrawerItemSelected(Smuoy smuoy);
+        void display(Fragment fragment, String title);
     }
 }

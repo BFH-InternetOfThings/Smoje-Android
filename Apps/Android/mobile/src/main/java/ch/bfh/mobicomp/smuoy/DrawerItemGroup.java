@@ -4,10 +4,11 @@ import ch.bfh.mobicomp.smuoy.entities.Smuoy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
- * Created by chris on 05.12.14.
+ * Holds a group of drawer items with a title and some items.
  */
 public class DrawerItemGroup {
     final int groupName;
@@ -18,11 +19,11 @@ public class DrawerItemGroup {
         this.groupItems = Arrays.asList(groupItems);
     }
 
-    public DrawerItemGroup(int groupName, List<Smuoy> smuoys) {
+    public DrawerItemGroup(int groupName, Collection<Smuoy> smuoys, DrawerItem.Listener<Smuoy> listener) {
         this.groupName = groupName;
         this.groupItems = new ArrayList<>(smuoys.size());
         for (Smuoy smuoy : smuoys) {
-            groupItems.add(new DrawerItem(smuoy));
+            groupItems.add(new DrawerItem<>(smuoy, listener));
         }
     }
 }
