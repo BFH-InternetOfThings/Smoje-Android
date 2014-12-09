@@ -20,7 +20,7 @@ public class Smuoy implements Serializable {
     public final List<Sensor> sensors = new LinkedList<>();
 
     public Smuoy(JSONObject json) {
-        id = str(json, "id", "");
+        id = str(json, "stationId", "");
         name = str(json, "name", "");
         description = str(json, "description", "");
 

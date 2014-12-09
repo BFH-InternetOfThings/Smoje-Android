@@ -22,7 +22,7 @@ public class SimpleMeasurement extends Measurement {
         String unit = "";
         try {
             JSONObject json = measurements.getJSONObject(0);
-            value = dec(json, "value", 0);
+            value = dec(json, "valueFloat", 0);
             unit = str(json, "unit", "");
         } catch (JSONException e) {
             Log.e("SimpleMeasurement", "Can't get field 'value' from JSON", e);

@@ -20,34 +20,30 @@ public class Sensor implements Serializable {
     public final int delay; // in seconds
     public final String status;
     public final String type;
-    public final String typeDescription;
     public final Measurement latestData;
 
     public Sensor(JSONObject json) {
-        id = str(json, "id", "");
+        id = str(json, "sensorId", "");
         name = str(json, "name", "");
         description = str(json, "description", "");
         delay = num(json, "delay", 60);
         status = str(json, "status", "");
 
         String type = "";
-        String typeDescription = "";
         Measurement latestData = null;
 
         try {
-            JSONObject typeJson = json.getJSONObject("type");
-            type = str(typeJson, "name", "");
-            typeDescription = str(typeJson, "description", "");
+            type = str(json, "sensorType", "");
 
             JSONArray measurements = json.getJSONArray("measurements");
-            switch (type) {
-                case "location":
+            switch (type.substring(0, 3)) {
+                case "gps":
                     latestData = new GpsMeasurement(measurements);
                     break;
-                case "wind":
+                case "direction/speed":
                     latestData = new WindMeasurement(measurements);
                     break;
-                case "image":
+                case "camera":
                     latestData = new ImageMeasurement(this, measurements);
                     break;
                 default:
@@ -58,7 +54,6 @@ public class Sensor implements Serializable {
             Log.d("Sensor", "Can't get field 'type' from JSON", e);
         }
         this.type = type;
-        this.typeDescription = typeDescription;
         this.latestData = latestData;
     }
 }

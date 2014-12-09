@@ -1,8 +1,10 @@
 package ch.bfh.mobicomp.smuoy;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +46,7 @@ public class SmuoyDetailFragment extends Fragment {
         // Retain this fragment across configuration changes.
         setRetainInstance(true);
 
-        if (item == null && getArguments().containsKey(ARG_ITEM_ID)) {
+        if (item == null && (getArguments() != null && getArguments().containsKey(ARG_ITEM_ID))) {
             item = smuoyService.getSmuoy(getArguments().getString(ARG_ITEM_ID));
         }
     }
@@ -53,17 +55,35 @@ public class SmuoyDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_smuoy_detail, container, false);
-        LinearLayout layout = (LinearLayout) rootView.findViewById(R.id.smuoy_detail);
+        LinearLayout layoutLeft = (LinearLayout) rootView.findViewById(R.id.smuoy_detail);
+        LinearLayout layoutRight;
+
+        if (layoutLeft == null) {
+            layoutLeft = (LinearLayout) rootView.findViewById(R.id.smuoy_detail_left);
+            layoutRight = (LinearLayout) rootView.findViewById(R.id.smuoy_detail_right);
+        } else {
+            layoutRight = layoutLeft;
+        }
 
         if (item != null) {
-            originalTitle = getActivity().getTitle();
-            getActivity().setTitle(item.name);
+            boolean selector = false;
             for (Sensor sensor : item.sensors) {
-                addCard(inflater, layout, sensor.latestData);
+                addCard(inflater, (selector ? layoutLeft : layoutRight), sensor.latestData);
+                selector = !selector;
             }
         }
 
         return rootView;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (item != null) {
+            originalTitle = activity.getTitle();
+            Log.d("detailFragment", "" + originalTitle);
+            activity.setTitle(item.name);
+        }
     }
 
     @Override
@@ -97,12 +117,13 @@ public class SmuoyDetailFragment extends Fragment {
 
         } else if (measurement instanceof SimpleMeasurement) {
             SimpleMeasurement simple = (SimpleMeasurement) measurement;
-            if ("temperature".equals(simple.sensor.type)) {
+            String type = simple.sensor.type;
+            if (type != null && type.startsWith("temperature")) {
                 String name = simple.sensor.name;
                 int drawableResource = 0;
                 card = getCard(inflater, parentView, R.layout.data_card_temperature);
-                switch (name) {
-                    case "water temperature":
+                switch (type) {
+                    case "temperature":
                         name = getActivity().getString(R.string.temperature_water);
                         if (simple.value < 10) {
                             drawableResource = R.drawable.ic_temperature_water_cold;
@@ -112,7 +133,7 @@ public class SmuoyDetailFragment extends Fragment {
                             drawableResource = R.drawable.ic_temperature_water_hot;
                         }
                         break;
-                    case "air temperature":
+                    case "temperature/humidity":
                         name = getActivity().getString(R.string.temperature_air);
                         if (simple.value < 15) {
                             drawableResource = R.drawable.ic_temperature_air_cold;
@@ -124,7 +145,7 @@ public class SmuoyDetailFragment extends Fragment {
                         break;
                 }
                 setText(card, R.id.label, name);
-                setText(card, R.id.temperature, String.format("%1$.1f%2$s", simple.value, simple.unit));
+                setText(card, R.id.temperature, String.format("%1$.1f%2$s", simple.value, "˚C"));
                 if (drawableResource > 0) {
                     ImageView icon = (ImageView) card.findViewById(R.id.icon);
                     icon.setImageResource(drawableResource);
