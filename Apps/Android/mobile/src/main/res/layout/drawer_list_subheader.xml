@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:text="@string/smuoys"
             android:background="@android:color/transparent"
-            android:textAppearance="?android:attr/textAppearanceListItem"
+            android:textAppearance="?android:attr/listSeparatorTextViewStyle"
             android:layout_centerVertical="true"
             android:paddingLeft="16dp"
             android:paddingStart="16dp"
