@@ -7,4 +7,5 @@
     <color name="wind">#a7e6fd</color>
     <color name="temperature">#fdf8a7</color>
     <color name="rain">#ffcfe0e6</color>
+    <color name="pressure">#ffffcf99</color>
 </resources>

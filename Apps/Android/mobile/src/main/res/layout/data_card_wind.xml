@@ -18,7 +18,7 @@
             android:padding="16dp">
 
         <TextView
-                android:id="@+id/wind_label"
+                android:id="@+id/label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
@@ -41,7 +41,7 @@
                     android:text="@string/speed_label"/>
 
             <TextView
-                    android:id="@+id/speed"
+                    android:id="@+id/speed_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="4dp"
@@ -57,7 +57,7 @@
                     android:text="@string/direction_label"/>
 
             <TextView
-                    android:id="@+id/direction"
+                    android:id="@+id/direction_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="4dp"

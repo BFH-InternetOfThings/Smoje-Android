@@ -28,7 +28,7 @@
                 android:layout_alignParentLeft="true"/>
 
         <TextView
-                android:id="@+id/rain_amount"
+                android:id="@+id/value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
@@ -39,6 +39,7 @@
                 tools:ignore="HardcodedText"/>
 
         <ImageView
+                android:id="@+id/icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_rain"
@@ -47,7 +48,6 @@
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:id="@+id/icon"
                 tools:ignore="ContentDescription,RtlSymmetry"/>
     </RelativeLayout>
 

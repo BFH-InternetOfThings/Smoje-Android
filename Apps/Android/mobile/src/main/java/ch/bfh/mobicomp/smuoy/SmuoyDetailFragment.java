@@ -76,7 +76,7 @@ public class SmuoyDetailFragment extends Fragment {
             // Map
             LatLng location = measurementService.getLocation(item);
             if (location != null) {
-                CardView card = CardType.MAP.getCard(inflater, layoutLeft);
+                CardType.MAP.getCard(inflater, layoutLeft);
                 GoogleMapOptions mapOptions = new GoogleMapOptions();
                 mapOptions.mapType(GoogleMap.MAP_TYPE_NORMAL);
                 mapOptions.camera(new CameraPosition(location, 12, 0, 0));
@@ -103,8 +103,8 @@ public class SmuoyDetailFragment extends Fragment {
             // TODO: convert to km/h
             if (!windSpeed.isEmpty() && !windDirection.isEmpty()) {
                 CardView card = CardType.WIND.getCard(inflater, layoutRight);
-                setText(card, R.id.speed, String.format("%1$.2fm/s", windSpeed.get(0).getValueDecimal()));
-                setText(card, R.id.direction, direction(windDirection.get(0).getValueDecimal()));
+                setText(card, R.id.speed_value, String.format("%1$.2fm/s", windSpeed.get(0).getValueDecimal()));
+                setText(card, R.id.direction_value, direction(windDirection.get(0).getValueDecimal()));
             }
 
             // Temperature
@@ -123,7 +123,7 @@ public class SmuoyDetailFragment extends Fragment {
                 } else {
                     icon.setImageResource(R.drawable.ic_temperature_air_hot);
                 }
-                setText(card, R.id.rain_amount, String.format("%1$.1f%2$s", temp, "˚C"));
+                setText(card, R.id.value, String.format("%1$.1f%2$s", temp, "˚C"));
             }
 
             List<Measurement> waterTemperature = measurementService.getMeasurements(item, SensorType.TEMPERATURE_WATER);
@@ -141,7 +141,7 @@ public class SmuoyDetailFragment extends Fragment {
                 } else {
                     icon.setImageResource(R.drawable.ic_temperature_water_hot);
                 }
-                setText(card, R.id.rain_amount, String.format("%1$.1f%2$s", temp, "˚C"));
+                setText(card, R.id.value, String.format("%1$.1f%2$s", temp, "˚C"));
             }
 
             // Rain
@@ -149,7 +149,7 @@ public class SmuoyDetailFragment extends Fragment {
             if (!rain.isEmpty()) {
                 double rainAmount = rain.get(0).getValueDecimal();
                 CardView card = CardType.RAIN.getCard(inflater, layoutRight);
-                setText(card, R.id.rain_amount, String.format("%1$.1f%2$s", rainAmount, " mm"));
+                setText(card, R.id.value, String.format("%1$.1f%2$s", rainAmount, " mm"));
             }
 
             // Atmospheric Pressure
@@ -233,7 +233,7 @@ public class SmuoyDetailFragment extends Fragment {
         TEMPERATURE(R.layout.data_card_temperature),
         WIND(R.layout.data_card_wind),
         RAIN(R.layout.data_card_rain),
-        ATMOSPHERIC_PRESSURE(R.layout.data_card_basic),
+        ATMOSPHERIC_PRESSURE(R.layout.data_card_air_pressure),
         HUMIDITY(R.layout.data_card_basic),
         OTHER(R.layout.data_card_basic);
 
