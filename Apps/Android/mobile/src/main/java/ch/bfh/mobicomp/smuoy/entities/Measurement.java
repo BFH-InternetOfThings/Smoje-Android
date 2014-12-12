@@ -1,29 +1,65 @@
 package ch.bfh.mobicomp.smuoy.entities;
 
-import android.util.Log;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.Date;
 
-import static ch.bfh.mobicomp.smuoy.utils.Utils.date;
-import static ch.bfh.mobicomp.smuoy.utils.Utils.str;
+import static ch.bfh.mobicomp.smuoy.utils.Utils.*;
 
 /**
  * Created by chris on 07.11.14.
  */
 public class Measurement implements Serializable {
-    public final Date timestamp;
+    private Date timestamp;
+    private String name;
+    private String valueString;
+    private double valueDecimal;
+    private String unit;
+    private SensorType type;
 
-    public Measurement(JSONArray measurements) {
-        Date timestamp = null;
-        try {
-            JSONObject jsonObject = measurements.getJSONObject(0);
-            timestamp = date(jsonObject, "timestamp", null);
-        } catch (Exception e) {
-            Log.e("Measurement", "Can't get field 'id' or 'timestamp' from JSON", e);
+    public Measurement(JSONObject json) {
+        update(json);
+    }
+
+    public void update(JSONObject json) {
+        timestamp = date(json, "timestamp", null);
+        name = str(json, "name", null);
+        valueString = str(json, "valueString", null);
+        valueDecimal = dec(json, "valueFloat", 0);
+        unit = str(json, "unit", "");
+    }
+
+    public SensorType getType() {
+        return type;
+    }
+
+    public void setType(SensorType type) {
+        this.type = type;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getValueString() {
+        return valueString;
+    }
+
+    public double getValueDecimal() {
+        return valueDecimal;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    @Override
+    public String toString() {
+        if (valueString != null && !"null".equalsIgnoreCase(valueString)) {
+            return valueString;
+        } else {
+            return String.format("%1$.2f%2$s", valueDecimal, unit);
         }
-        this.timestamp = timestamp;
     }
 }

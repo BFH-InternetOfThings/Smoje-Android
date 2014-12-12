@@ -17,5 +17,8 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="smuoys">Smuoys</string>
+    <string name="rain">Rain</string>
+    <string name="atmospheric_pressure">Barometric Pressure</string>
+    <string name="humidity">Humidity</string>
 
 </resources>

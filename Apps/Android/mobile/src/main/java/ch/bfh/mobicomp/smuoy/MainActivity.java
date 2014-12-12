@@ -6,9 +6,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
-import ch.bfh.mobicomp.smuoy.entities.GpsMeasurement;
-import ch.bfh.mobicomp.smuoy.entities.Measurement;
-import ch.bfh.mobicomp.smuoy.entities.Sensor;
 import ch.bfh.mobicomp.smuoy.entities.Smuoy;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -22,7 +19,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static ch.bfh.mobicomp.smuoy.SmuoyService.smuoyService;
@@ -86,17 +82,13 @@ public class MainActivity extends ActionBarActivity
                         @Override
                         public void onSmuoyListLoaded(Collection<Smuoy> smuoys) {
                             for (Smuoy smuoy : smuoys) {
-                                for (Sensor sensor : smuoy.sensors) {
-                                    Measurement data = sensor.latestData;
-                                    if (data instanceof GpsMeasurement) {
-                                        GpsMeasurement gpsData = (GpsMeasurement) data;
-                                        Marker marker = map.addMarker(new MarkerOptions()
-                                                .position(new LatLng(gpsData.lat, gpsData.lon))
-                                                .title(smuoy.name));
-                                        marker.showInfoWindow();
-                                        markerSmuoyMap.put(marker.getId(), smuoy);
-                                        break; // even if there's more than one GPS measurement, we're not interested
-                                    }
+                                LatLng location = MeasurementService.measurementService.getLocation(smuoy);
+                                if (location != null) {
+                                    Marker marker = map.addMarker(new MarkerOptions()
+                                            .position(location)
+                                            .title(smuoy.name));
+                                    marker.showInfoWindow();
+                                    markerSmuoyMap.put(marker.getId(), smuoy);
                                 }
                             }
                         }

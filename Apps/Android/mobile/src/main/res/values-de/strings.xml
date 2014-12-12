@@ -16,4 +16,7 @@
     <string name="navigation_drawer_close">Seitennavigation schließen</string>
     <string name="navigation_drawer_open">Seitennavigation öffnen</string>
     <string name="smuoys">Smojen</string>
+    <string name="rain">Regen</string>
+    <string name="atmospheric_pressure">Luftdruck</string>
+    <string name="humidity">Luftfeuchtigkeit</string>
 </resources>

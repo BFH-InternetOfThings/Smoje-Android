@@ -11,7 +11,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import ch.bfh.mobicomp.smuoy.entities.*;
+import ch.bfh.mobicomp.smuoy.entities.Measurement;
+import ch.bfh.mobicomp.smuoy.entities.SensorType;
+import ch.bfh.mobicomp.smuoy.entities.Smuoy;
 import ch.bfh.mobicomp.smuoy.utils.DownloadImageTask;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
@@ -19,6 +21,11 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
+
+import static ch.bfh.mobicomp.smuoy.MeasurementService.measurementService;
 import static ch.bfh.mobicomp.smuoy.SmuoyService.smuoyService;
 import static ch.bfh.mobicomp.smuoy.utils.Utils.direction;
 
@@ -66,10 +73,124 @@ public class SmuoyDetailFragment extends Fragment {
         }
 
         if (item != null) {
-            boolean selector = false;
-            for (Sensor sensor : item.sensors) {
-                addCard(inflater, (selector ? layoutLeft : layoutRight), sensor.latestData);
-                selector = !selector;
+            // Map
+            LatLng location = measurementService.getLocation(item);
+            if (location != null) {
+                CardView card = CardType.MAP.getCard(inflater, layoutLeft);
+                GoogleMapOptions mapOptions = new GoogleMapOptions();
+                mapOptions.mapType(GoogleMap.MAP_TYPE_NORMAL);
+                mapOptions.camera(new CameraPosition(location, 12, 0, 0));
+
+                SmuoyMapFragment mapFragment = SmuoyMapFragment.newInstance(new MarkerOptions().position(location));
+                getFragmentManager().beginTransaction().add(R.id.map_container, mapFragment).commit();
+            }
+
+            // Image
+            List<Measurement> images = measurementService.getMeasurements(item, SensorType.CAMERA);
+            for (Measurement image : images) {
+                try {
+                    URL url = new URL(image.getValueString());
+                    CardView card = CardType.IMAGE.getCard(inflater, layoutLeft);
+                    new DownloadImageTask(item.id, card, 300).execute(url);
+                } catch (MalformedURLException e) {
+                    Log.e("detail", e.getMessage(), e);
+                }
+            }
+
+            // Wind
+            List<Measurement> windSpeed = measurementService.getMeasurements(item, SensorType.WIND_SPEED);
+            List<Measurement> windDirection = measurementService.getMeasurements(item, SensorType.WIND_DIRECTION);
+            // TODO: convert to km/h
+            if (!windSpeed.isEmpty() && !windDirection.isEmpty()) {
+                CardView card = CardType.WIND.getCard(inflater, layoutRight);
+                setText(card, R.id.speed, String.format("%1$.2fm/s", windSpeed.get(0).getValueDecimal()));
+                setText(card, R.id.direction, direction(windDirection.get(0).getValueDecimal()));
+            }
+
+            // Temperature
+            List<Measurement> airTemperature = measurementService.getMeasurements(item, SensorType.TEMPERATURE_AIR);
+            if (!airTemperature.isEmpty()) {
+                double temp = airTemperature.get(0).getValueDecimal();
+
+                CardView card = CardType.TEMPERATURE.getCard(inflater, layoutRight);
+                ImageView icon = (ImageView) card.findViewById(R.id.icon);
+                setText(card, R.id.label, R.string.temperature_air);
+
+                if (temp < 15) {
+                    icon.setImageResource(R.drawable.ic_temperature_air_cold);
+                } else if (temp < 25) {
+                    icon.setImageResource(R.drawable.ic_temperature_air_warm);
+                } else {
+                    icon.setImageResource(R.drawable.ic_temperature_air_hot);
+                }
+                setText(card, R.id.rain_amount, String.format("%1$.1f%2$s", temp, "˚C"));
+            }
+
+            List<Measurement> waterTemperature = measurementService.getMeasurements(item, SensorType.TEMPERATURE_WATER);
+            if (!waterTemperature.isEmpty()) {
+                double temp = waterTemperature.get(0).getValueDecimal();
+
+                CardView card = CardType.TEMPERATURE.getCard(inflater, layoutRight);
+                ImageView icon = (ImageView) card.findViewById(R.id.icon);
+                setText(card, R.id.label, R.string.temperature_water);
+
+                if (temp < 10) {
+                    icon.setImageResource(R.drawable.ic_temperature_water_cold);
+                } else if (temp < 15) {
+                    icon.setImageResource(R.drawable.ic_temperature_water_warm);
+                } else {
+                    icon.setImageResource(R.drawable.ic_temperature_water_hot);
+                }
+                setText(card, R.id.rain_amount, String.format("%1$.1f%2$s", temp, "˚C"));
+            }
+
+            // Rain
+            List<Measurement> rain = measurementService.getMeasurements(item, SensorType.RAIN_AMOUNT);
+            if (!rain.isEmpty()) {
+                double rainAmount = rain.get(0).getValueDecimal();
+                CardView card = CardType.RAIN.getCard(inflater, layoutRight);
+                setText(card, R.id.rain_amount, String.format("%1$.1f%2$s", rainAmount, " mm"));
+            }
+
+            // Atmospheric Pressure
+            List<Measurement> atmosphericPressure = measurementService.getMeasurements(item, SensorType.ATMOSPHERIC_PRESSURE);
+            if (!atmosphericPressure.isEmpty()) {
+                double pressure = atmosphericPressure.get(0).getValueDecimal();
+                CardView card = CardType.ATMOSPHERIC_PRESSURE.getCard(inflater, layoutRight);
+                setText(card, R.id.label, R.string.atmospheric_pressure);
+                setText(card, R.id.value, String.format("%1$.1f%2$s", pressure * 10, " hPa"));
+            }
+
+            // Humidity
+            List<Measurement> humidity = measurementService.getMeasurements(item, SensorType.HUMIDITY);
+            if (!humidity.isEmpty()) {
+                double relativeHumidity = humidity.get(0).getValueDecimal();
+                CardView card = CardType.HUMIDITY.getCard(inflater, layoutRight);
+                setText(card, R.id.label, R.string.humidity);
+                setText(card, R.id.value, String.format("%1$.1f%2$s", relativeHumidity, "%"));
+            }
+
+            // Other
+            for (SensorType type : SensorType.values()) {
+                switch (type) {
+                    case POSITION:
+                    case CAMERA:
+                    case WIND_SPEED:
+                    case WIND_DIRECTION:
+                    case TEMPERATURE_AIR:
+                    case TEMPERATURE_WATER:
+                    case RAIN_AMOUNT:
+                    case ATMOSPHERIC_PRESSURE:
+                    case HUMIDITY:
+                        continue;
+                    default:
+                        List<Measurement> measurements = measurementService.getMeasurements(item, type);
+                        for (Measurement measurement : measurements) {
+                            CardView card = CardType.OTHER.getCard(inflater, layoutLeft);
+                            setText(card, R.id.label, measurement.getName());
+                            setText(card, R.id.value, measurement.toString());
+                        }
+                }
             }
         }
 
@@ -92,81 +213,12 @@ public class SmuoyDetailFragment extends Fragment {
         super.onDetach();
     }
 
-    private void addCard(LayoutInflater inflater, final ViewGroup parentView, Measurement measurement) {
-        CardView card;
-        if (measurement instanceof WindMeasurement) {
-            card = getCard(inflater, parentView, R.layout.data_card_wind);
-            WindMeasurement windMeasurement = (WindMeasurement) measurement;
-            setText(card, R.id.speed, String.format("%1$.2fkm/h", windMeasurement.speed));
-            setText(card, R.id.direction, direction(windMeasurement.direction));
-        } else if (measurement instanceof ImageMeasurement) {
-            card = getCard(inflater, parentView, R.layout.data_card_image);
-            ImageMeasurement imageMeasurement = (ImageMeasurement) measurement;
-            new DownloadImageTask(item.id, card, imageMeasurement.sensor.delay).execute(imageMeasurement.url);
-        } else if (measurement instanceof GpsMeasurement) {
-            card = getCard(inflater, parentView, R.layout.data_card_map);
-
-            GpsMeasurement gpsMeasurement = (GpsMeasurement) measurement;
-
-            GoogleMapOptions mapOptions = new GoogleMapOptions();
-            mapOptions.mapType(GoogleMap.MAP_TYPE_NORMAL);
-            mapOptions.camera(new CameraPosition(new LatLng(gpsMeasurement.lat, gpsMeasurement.lon), 12, 0, 0));
-
-            SmuoyMapFragment mapFragment = SmuoyMapFragment.newInstance(new MarkerOptions().position(new LatLng(gpsMeasurement.lat, gpsMeasurement.lon)));
-            getFragmentManager().beginTransaction().add(R.id.map_container, mapFragment).commit();
-
-        } else if (measurement instanceof SimpleMeasurement) {
-            SimpleMeasurement simple = (SimpleMeasurement) measurement;
-            String type = simple.sensor.type;
-            if (type != null && type.startsWith("temperature")) {
-                String name = simple.sensor.name;
-                int drawableResource = 0;
-                card = getCard(inflater, parentView, R.layout.data_card_temperature);
-                switch (type) {
-                    case "temperature":
-                        name = getActivity().getString(R.string.temperature_water);
-                        if (simple.value < 10) {
-                            drawableResource = R.drawable.ic_temperature_water_cold;
-                        } else if (simple.value < 15) {
-                            drawableResource = R.drawable.ic_temperature_water_warm;
-                        } else {
-                            drawableResource = R.drawable.ic_temperature_water_hot;
-                        }
-                        break;
-                    case "temperature/humidity":
-                        name = getActivity().getString(R.string.temperature_air);
-                        if (simple.value < 15) {
-                            drawableResource = R.drawable.ic_temperature_air_cold;
-                        } else if (simple.value < 25) {
-                            drawableResource = R.drawable.ic_temperature_air_warm;
-                        } else {
-                            drawableResource = R.drawable.ic_temperature_air_hot;
-                        }
-                        break;
-                }
-                setText(card, R.id.label, name);
-                setText(card, R.id.temperature, String.format("%1$.1f%2$s", simple.value, "˚C"));
-                if (drawableResource > 0) {
-                    ImageView icon = (ImageView) card.findViewById(R.id.icon);
-                    icon.setImageResource(drawableResource);
-                }
-            } else {
-                card = getCard(inflater, parentView, R.layout.data_card_basic);
-                setText(card, R.id.text, measurement.toString());
-            }
-        } else {
-            card = getCard(inflater, parentView, R.layout.data_card_basic);
-            setText(card, R.id.text, measurement.toString());
-        }
-        parentView.addView(card);
-    }
-
-    private CardView getCard(LayoutInflater inflater, ViewGroup parentView, int id) {
-        return (CardView) inflater.inflate(id, parentView, false);
-    }
-
     private void setText(View parent, int id, CharSequence text) {
         ((TextView) parent.findViewById(id)).setText(text);
+    }
+
+    private void setText(View parent, int id, int textId) {
+        ((TextView) parent.findViewById(id)).setText(textId);
     }
 
     public static SmuoyDetailFragment newInstance(Smuoy smuoy) {
@@ -175,4 +227,26 @@ public class SmuoyDetailFragment extends Fragment {
         return fragment;
     }
 
+    private static enum CardType {
+        IMAGE(R.layout.data_card_image),
+        MAP(R.layout.data_card_map),
+        TEMPERATURE(R.layout.data_card_temperature),
+        WIND(R.layout.data_card_wind),
+        RAIN(R.layout.data_card_rain),
+        ATMOSPHERIC_PRESSURE(R.layout.data_card_basic),
+        HUMIDITY(R.layout.data_card_basic),
+        OTHER(R.layout.data_card_basic);
+
+        private int layout;
+
+        private CardType(int layout) {
+            this.layout = layout;
+        }
+
+        private CardView getCard(LayoutInflater inflater, ViewGroup parentView) {
+            CardView cardView = (CardView) inflater.inflate(layout, parentView, false);
+            parentView.addView(cardView);
+            return cardView;
+        }
+    }
 }

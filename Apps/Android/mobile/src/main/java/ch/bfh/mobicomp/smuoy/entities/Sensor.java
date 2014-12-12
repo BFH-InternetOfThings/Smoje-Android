@@ -1,12 +1,12 @@
 package ch.bfh.mobicomp.smuoy.entities;
 
 import android.util.Log;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
 
+import static ch.bfh.mobicomp.smuoy.MeasurementService.measurementService;
 import static ch.bfh.mobicomp.smuoy.utils.Utils.num;
 import static ch.bfh.mobicomp.smuoy.utils.Utils.str;
 
@@ -20,9 +20,8 @@ public class Sensor implements Serializable {
     public final int delay; // in seconds
     public final String status;
     public final String type;
-    public final Measurement latestData;
 
-    public Sensor(JSONObject json) {
+    public Sensor(Smuoy smuoy, JSONObject json) {
         id = str(json, "sensorId", "");
         name = str(json, "name", "");
         description = str(json, "description", "");
@@ -32,28 +31,12 @@ public class Sensor implements Serializable {
         String type = "";
         Measurement latestData = null;
 
-        try {
-            type = str(json, "sensorType", "");
+        this.type = str(json, "sensorType", "");
 
-            JSONArray measurements = json.getJSONArray("measurements");
-            switch (type.substring(0, 3)) {
-                case "gps":
-                    latestData = new GpsMeasurement(measurements);
-                    break;
-                case "direction/speed":
-                    latestData = new WindMeasurement(measurements);
-                    break;
-                case "camera":
-                    latestData = new ImageMeasurement(this, measurements);
-                    break;
-                default:
-                    latestData = new SimpleMeasurement(this, measurements);
-                    break;
-            }
+        try {
+            measurementService.registerSensor(smuoy, this, json.getJSONArray("measurements"));
         } catch (JSONException e) {
             Log.d("Sensor", "Can't get field 'type' from JSON", e);
         }
-        this.type = type;
-        this.latestData = latestData;
     }
 }

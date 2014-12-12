@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
+
 import static ch.bfh.mobicomp.smuoy.utils.Utils.str;
 
 /**
@@ -26,8 +27,8 @@ public class Smuoy implements Serializable {
 
         try {
             JSONArray ja = json.getJSONArray("sensors");
-            for (int i=0; i<ja.length(); i++){
-                sensors.add(new Sensor(ja.getJSONObject(i)));
+            for (int i = 0; i < ja.length(); i++) {
+                sensors.add(new Sensor(this, ja.getJSONObject(i)));
             }
         } catch (JSONException e) {
             Log.d("Smuoy", "Can't get JSONArray 'sensors'", e);
