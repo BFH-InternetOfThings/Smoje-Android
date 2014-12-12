@@ -22,8 +22,8 @@ import ch.bfh.mobicomp.smuoy.entities.Smuoy;
 
 import java.util.Collection;
 
-import static ch.bfh.mobicomp.smuoy.SmuoyService.SmuoyLoadedListener;
-import static ch.bfh.mobicomp.smuoy.SmuoyService.smuoyService;
+import static ch.bfh.mobicomp.smuoy.services.SmuoyService.SmuoyLoadedListener;
+import static ch.bfh.mobicomp.smuoy.services.SmuoyService.smuoyService;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.

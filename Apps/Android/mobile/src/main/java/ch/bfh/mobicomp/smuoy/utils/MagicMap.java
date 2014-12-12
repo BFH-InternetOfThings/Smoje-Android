@@ -27,7 +27,7 @@ public class MagicMap<K, V> implements Map<K, V> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public V get(Object key) {
+    public synchronized V get(Object key) {
         V value = map.get(key);
         if (value == null) {
             try {

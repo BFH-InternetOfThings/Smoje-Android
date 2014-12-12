@@ -1,33 +1,31 @@
-package ch.bfh.mobicomp.smuoy;
+package ch.bfh.mobicomp.smuoy.services;
 
 import android.os.AsyncTask;
 import android.util.Log;
+import ch.bfh.mobicomp.smuoy.entities.Sensor;
 import ch.bfh.mobicomp.smuoy.entities.Smuoy;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.StatusLine;
+import ch.bfh.mobicomp.smuoy.utils.Utils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeMap;
 
+import static ch.bfh.mobicomp.smuoy.services.MeasurementService.measurementService;
 import static java.lang.System.currentTimeMillis;
 
 /**
  * SmuoyService asynchronously loads Smuoys from the REST web service (this part is still to do).
- * To get smuoys, register a SmuoyLoadedListener and call {@link #loadSmuoys(ch.bfh.mobicomp.smuoy.SmuoyService.SmuoyLoadedListener)}.
+ * To get smuoys, register a SmuoyLoadedListener and call {@link #loadSmuoys(SmuoyService.SmuoyLoadedListener)}.
  */
 public class SmuoyService {
     private static final long MIN_TIME_BETWEEN_REQUESTS = 10000;
-    private static final String SERVICE_URL = "http://178.62.163.199/smoje/index.php/Measurements";
+    private static final String SERVICE_URL = "http://178.62.163.199/smoje/index.php/stations/";
     public static final SmuoyService smuoyService = new SmuoyService();
 
     private volatile boolean loading = false;
@@ -49,7 +47,7 @@ public class SmuoyService {
             return;
         }
         loading = true;
-        new LoadSmuoysTask().execute(SERVICE_URL);
+        new LoadSmuoysTask().execute();
         lastExecution = currentTimeMillis();
     }
 
@@ -73,37 +71,39 @@ public class SmuoyService {
         public void onSmuoyListLoaded(Collection<Smuoy> smuoys);
     }
 
-    private class LoadSmuoysTask extends AsyncTask<String, Void, List<Smuoy>> {
+    private class LoadSmuoysTask extends AsyncTask<Void, Void, List<Smuoy>> {
+        private HttpClient httpClient = new DefaultHttpClient();
+
         @Override
-        protected List<Smuoy> doInBackground(String... params) {
+        protected List<Smuoy> doInBackground(Void... params) {
             try {
                 List<Smuoy> result = new LinkedList<>();
 
-                HttpClient httpclient = new DefaultHttpClient();
-
-                HttpResponse response = httpclient.execute(new HttpGet(params[0]));
-                StatusLine statusLine = response.getStatusLine();
-                if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
-                    ByteArrayOutputStream out = new ByteArrayOutputStream();
-                    response.getEntity().writeTo(out);
-                    out.close();
-                    String responseString = out.toString();
-
-                    JSONObject jsonObject = new JSONObject(responseString);
-                    JSONArray jsonArray = jsonObject.getJSONArray("stations");
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        result.add(new Smuoy(jsonArray.getJSONObject(i)));
-                    }
-                } else {
-                    // Closes the connection.
-                    response.getEntity().getContent().close();
-                    throw new IOException(statusLine.getReasonPhrase());
+                JSONObject jsonObject = new JSONObject(Utils.request(httpClient, new HttpGet(SERVICE_URL)));
+                JSONArray jsonArray = jsonObject.getJSONArray("stations");
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    Smuoy smuoy = new Smuoy(jsonArray.getJSONObject(i));
+                    result.add(smuoy);
+                    loadSensors(smuoy);
                 }
                 return result;
             } catch (Exception e) {
                 Log.e("smuoyService", e.getMessage(), e);
-                e.printStackTrace();
                 return null;
+            }
+        }
+
+        private void loadSensors(Smuoy smuoy) {
+            try {
+                JSONObject jsonObject = new JSONObject(Utils.request(httpClient, new HttpGet(SERVICE_URL + smuoy.id + "/sensors/")));
+                JSONArray jsonArray = jsonObject.getJSONArray("sensors");
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    Sensor sensor = new Sensor(jsonArray.getJSONObject(i));
+                    smuoy.addSensor(sensor);
+                    measurementService.registerSensor(smuoy, sensor);
+                }
+            } catch (Exception e) {
+                Log.e("smuoyService", e.getMessage(), e);
             }
         }
 

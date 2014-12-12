@@ -1,9 +1,16 @@
 package ch.bfh.mobicomp.smuoy.utils;
 
 import android.util.Log;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -71,6 +78,21 @@ public class Utils {
             if (deg < (11.25 + i * 22.5)) {
                 return DIRECTIONS[i % 16];
             }
+        }
+    }
+
+    public static String request(HttpClient httpClient, HttpUriRequest request) throws IOException {
+        HttpResponse response = httpClient.execute(request);
+        StatusLine statusLine = response.getStatusLine();
+        if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            response.getEntity().writeTo(out);
+            out.close();
+            return out.toString();
+        } else {
+            // Closes the connection.
+            response.getEntity().getContent().close();
+            throw new IOException(statusLine.getReasonPhrase());
         }
     }
 }

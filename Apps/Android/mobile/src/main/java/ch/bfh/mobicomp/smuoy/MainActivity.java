@@ -7,6 +7,8 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
 import ch.bfh.mobicomp.smuoy.entities.Smuoy;
+import ch.bfh.mobicomp.smuoy.services.MeasurementService;
+import ch.bfh.mobicomp.smuoy.services.SmuoyService;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -21,7 +23,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import static ch.bfh.mobicomp.smuoy.SmuoyService.smuoyService;
+import static ch.bfh.mobicomp.smuoy.services.SmuoyService.smuoyService;
 
 
 public class MainActivity extends ActionBarActivity
