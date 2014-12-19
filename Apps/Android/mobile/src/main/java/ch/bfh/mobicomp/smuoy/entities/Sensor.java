@@ -1,12 +1,10 @@
 package ch.bfh.mobicomp.smuoy.entities;
 
-import android.util.Log;
-import org.json.JSONException;
+import ch.bfh.mobicomp.smuoy.cards.CardUpdater;
 import org.json.JSONObject;
 
 import java.io.Serializable;
 
-import static ch.bfh.mobicomp.smuoy.services.MeasurementService.measurementService;
 import static ch.bfh.mobicomp.smuoy.utils.Utils.num;
 import static ch.bfh.mobicomp.smuoy.utils.Utils.str;
 
@@ -18,11 +16,30 @@ public class Sensor implements Serializable {
     public final String name;
     public final int delay; // in seconds
     public final String status;
+    public final String unit;
+
+    private Measurement lastMeasurement;
+    private CardUpdater updater;
 
     public Sensor(JSONObject json) {
         id = str(json, "sensorId", "");
         name = str(json, "name", "");
         delay = num(json, "delay", 60);
         status = str(json, "status", "");
+        unit = str(json, "unit", "");
+    }
+
+    public void update(Measurement newMeasurement) {
+        lastMeasurement = newMeasurement;
+        if (updater != null) {
+            updater.update(newMeasurement);
+        }
+    }
+
+    public void setUpdater(CardUpdater updater) {
+        this.updater = updater;
+        if (updater != null && lastMeasurement != null) {
+            updater.update(lastMeasurement);
+        }
     }
 }

@@ -11,16 +11,11 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * Created by chris on 07.11.14.
  */
 public class Utils {
-    private final static DateFormat ISO_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-
     public static String str(JSONObject json, String field, String fallback) {
         try {
             Object o = json.get(field);
@@ -33,12 +28,9 @@ public class Utils {
         return fallback;
     }
 
-    public static Date date(JSONObject json, String field, Date fallback) {
+    public static long date(JSONObject json, String field, long fallback) {
         try {
-            Object o = json.get(field);
-            if (o != null) {
-                return ISO_DATE_FORMAT.parse(o.toString());
-            }
+            return json.getLong(field) * 1000;
         } catch (Exception e) {
             Log.d("Utils", "Can't get field '" + field + "' from JSON: " + json, e);
         }

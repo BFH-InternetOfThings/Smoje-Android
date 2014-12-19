@@ -25,7 +25,7 @@ public class DefaultCardUpdater extends CardUpdater {
         } else {
             setText(R.id.label, R.string.humidity);
         }
-        setText(R.id.value, String.format("%1$.1f%2$s", measurement.getValueDecimal(), "%"));
+        setText(R.id.value, String.format("%1$.1f%2$s", measurement.getValue(), "%"));
     }
 
     @Override

@@ -14,7 +14,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,12 +40,12 @@ public class MeasurementService {
         scheduler.schedule(new Runnable() {
             @Override
             public void run() {
+                List<Measurement> measurements = new LinkedList<>();
                 try {
-                    String response = Utils.request(httpClient, new HttpGet(SERVICE_URL + smuoy.id + "/sensors/" + sensor.id + "/measurements"));
+                    String response = Utils.request(httpClient, new HttpGet(SERVICE_URL + smuoy.id + "/sensors/measurements"));
 
-                    JSONArray jsonMeasurements = new JSONArray(response);
+                    JSONArray jsonMeasurements = getMeasurements(sensor, response);
 
-                    List<Measurement> measurements = new LinkedList<>();
                     for (int i = 0; i < jsonMeasurements.length(); i++) {
                         try {
                             JSONObject measurement = jsonMeasurements.getJSONObject(i);
@@ -55,18 +54,40 @@ public class MeasurementService {
                             Log.e("measurementService", e.getMessage(), e);
                         }
                     }
-                } catch (IOException | JSONException e) {
-                    e.printStackTrace();
+                } catch (Exception e) {
+                    Log.e("measurementService", e.getMessage(), e);
                 }
+                long delay = sensor.delay;
+                if (measurements.size() > 0) {
+                    delay = measurements.get(0).getNextExecutionTime() - System.currentTimeMillis() + 500;
+                    if (delay < 0) {
+                        delay = 0;
+                    }
+                }
+                scheduler.schedule(this, delay, TimeUnit.MILLISECONDS);
             }
         }, 0, TimeUnit.MILLISECONDS);
+    }
+
+    private JSONArray getMeasurements(Sensor sensor, String response) throws JSONException {
+        JSONObject responseObject = new JSONObject(response);
+        JSONArray stations = responseObject.getJSONArray("station");
+        JSONObject station = stations.getJSONObject(0);
+        JSONArray sensors = station.getJSONArray("sensors");
+        for (int i = 0; i < sensors.length(); i++) {
+            JSONObject sensorObject = sensors.getJSONObject(i);
+            if (sensorObject.getString("sensorId").equals(sensor.id)) {
+                return sensorObject.getJSONArray("measurements");
+            }
+        }
+        return null;
     }
 
     private Measurement getMeasurement(List<Measurement> measurements, String unit) {
         for (Measurement measurement : measurements) {
             // FIXME: using the unit is just plain stupid and doesn't work as soon as we have water temperature.
             // There should be a useful name.
-            if (unit.equalsIgnoreCase(measurement.getUnit())) {
+            if (unit.equalsIgnoreCase(measurement.sensor.unit)) {
                 return measurement;
             }
         }

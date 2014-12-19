@@ -11,7 +11,7 @@ import ch.bfh.mobicomp.smuoy.entities.Measurement;
 public class AirTemperatureCardUpdater extends CardUpdater {
     @Override
     protected void updateCard(Measurement measurement) {
-        double temp = measurement.getValueDecimal();
+        double temp = measurement.getValue();
 
         ImageView icon = (ImageView) card.findViewById(R.id.icon);
         setText(R.id.label, R.string.temperature_air);

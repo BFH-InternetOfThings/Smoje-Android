@@ -31,7 +31,7 @@ public class MainActivity extends ActionBarActivity
 
     private final static LatLngBounds LAKE_BIEL = new LatLngBounds(
             new LatLng(47.034301, 7.060707),
-            new LatLng(47.136459, 7.243011)
+            new LatLng(47.1492499,7.2548801)
     );
 
     private final Map<String, Smuoy> markerSmuoyMap = new HashMap<>();

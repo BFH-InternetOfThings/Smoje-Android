@@ -1,79 +1,58 @@
 package ch.bfh.mobicomp.smuoy.entities;
 
-import ch.bfh.mobicomp.smuoy.cards.CardUpdater;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.json.JSONObject;
 
 import java.io.Serializable;
-import java.util.Date;
 
-import static ch.bfh.mobicomp.smuoy.utils.Utils.*;
+import static ch.bfh.mobicomp.smuoy.utils.Utils.date;
+import static ch.bfh.mobicomp.smuoy.utils.Utils.str;
 
 /**
  * Represents a measurement of a specific sensor from a specific smuoy
  */
 public class Measurement implements Serializable {
-    public final String smuoyId, sensorId;
+    public final String smuoyId;
+    public final Sensor sensor;
 
-    private Date timestamp;
-    private String name;
-    private String valueString;
-    private double valueDecimal;
-    private String unit;
-    private String type;
-
-    private CardUpdater updater;
+    private long timestamp;
+    private String value;
 
     public Measurement(String smuoyId, Sensor sensor, JSONObject json) {
         this.smuoyId = smuoyId;
-        this.sensorId = sensor.id;
-        this.type = sensor.name;
+        this.sensor = sensor;
         update(json);
     }
 
     public void update(JSONObject json) {
-        timestamp = date(json, "timestamp", null);
-        name = str(json, "name", null);
-        valueString = str(json, "valueString", null);
-        valueDecimal = dec(json, "valueFloat", 0);
-        unit = str(json, "unit", "");
-        if (updater != null) {
-            updater.update(this);
+        timestamp = date(json, "timestamp", System.currentTimeMillis());
+        value = str(json, "value", null);
+        sensor.update(this);
+    }
+
+    public String getString() {
+        return value;
+    }
+
+    public double getValue() {
+        if (NumberUtils.isNumber(value)) {
+            return Double.parseDouble(value);
         }
+        return 0;
     }
 
-    public void setUpdater(CardUpdater updater) {
-        this.updater = updater;
-        { // TODO: only if loaded - timestamp != null - as soon as timestamp works
-            updater.update(this);
-        }
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getValueString() {
-        return valueString;
-    }
-
-    public double getValueDecimal() {
-        return valueDecimal;
-    }
-
-    public String getUnit() {
-        return unit;
+    /**
+     * Returns the next execution time as milliseconds from 1970-01-01
+     */
+    public long getNextExecutionTime() {
+        return timestamp + (sensor.delay * 1000);
     }
 
     @Override
     public String toString() {
-        if (valueString != null && !"null".equalsIgnoreCase(valueString)) {
-            return valueString;
-        } else {
-            return String.format("%1$.2f%2$s", valueDecimal, unit);
+        if (NumberUtils.isNumber(value)) {
+            return String.format("%1$.2f%2$s", getValue(), sensor.unit);
         }
+        return value;
     }
 }

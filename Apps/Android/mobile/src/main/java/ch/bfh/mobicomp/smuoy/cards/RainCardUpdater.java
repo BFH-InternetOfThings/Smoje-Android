@@ -9,7 +9,7 @@ import ch.bfh.mobicomp.smuoy.entities.Measurement;
 public class RainCardUpdater extends CardUpdater {
     @Override
     protected void updateCard(Measurement measurement) {
-        setText(R.id.value, String.format("%1$.1f%2$s", measurement.getValueDecimal(), " mm"));
+        setText(R.id.value, String.format("%1$.1f%2$s", measurement.getValue(), " mm"));
     }
 
     @Override

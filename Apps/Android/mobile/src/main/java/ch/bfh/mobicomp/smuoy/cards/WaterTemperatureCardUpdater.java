@@ -10,7 +10,7 @@ import ch.bfh.mobicomp.smuoy.entities.Measurement;
 public class WaterTemperatureCardUpdater extends CardUpdater {
     @Override
     protected void updateCard(Measurement measurement) {
-        double temperature = measurement.getValueDecimal();
+        double temperature = measurement.getValue();
 
         ImageView icon = (ImageView) card.findViewById(R.id.icon);
         setText(R.id.label, R.string.temperature_water);

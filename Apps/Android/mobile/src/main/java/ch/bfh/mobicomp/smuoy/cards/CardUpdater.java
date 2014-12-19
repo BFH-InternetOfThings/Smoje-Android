@@ -11,13 +11,27 @@ public abstract class CardUpdater {
     protected CardView card;
 
     public void update(final Measurement measurement) {
-        if (card != null) { // TODO: check if card can be updated, else set to null
-            card.getHandler().post(new Runnable() {
-                @Override
-                public void run() {
-                    updateCard(measurement);
-                }
-            });
+        if (card != null) {
+            if (card.getHandler() == null) {
+                card.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+                    @Override
+                    public void onViewAttachedToWindow(View v) {
+                        updateCard(measurement);
+                    }
+
+                    @Override
+                    public void onViewDetachedFromWindow(View v) {
+
+                    }
+                });
+            } else {
+                card.getHandler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateCard(measurement);
+                    }
+                });
+            }
         }
     }
 

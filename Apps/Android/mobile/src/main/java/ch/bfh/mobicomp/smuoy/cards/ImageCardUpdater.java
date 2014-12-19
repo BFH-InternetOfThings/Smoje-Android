@@ -16,7 +16,7 @@ public class ImageCardUpdater extends CardUpdater {
     @Override
     protected void updateCard(Measurement measurement) {
         try {
-            URL url = new URL(measurement.getValueString());
+            URL url = new URL(measurement.getString());
             new DownloadImageTask(measurement.smuoyId, card, 300).execute(url);
         } catch (MalformedURLException e) {
             Log.e("detail", e.getMessage(), e);

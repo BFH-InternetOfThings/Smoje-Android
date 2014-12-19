@@ -63,27 +63,35 @@ public class SmuoyDetailFragment extends Fragment {
             item.setListener(new Smuoy.SensorListener() {
                 @Override
                 public void added(Sensor sensor) {
+                    CardUpdater updater = null;
                     switch (sensor.name) {
                         case "air_camera":
-                            new ImageCardUpdater().makeCard(inflater, layoutLeft);
+                            updater = new ImageCardUpdater();
+                            updater.makeCard(inflater, layoutLeft);
                             break;
                         case "air_humidity":
-                            new DefaultCardUpdater(R.string.humidity).makeCard(inflater, layoutRight);
+                            updater = new DefaultCardUpdater(R.string.humidity);
+                            updater.makeCard(inflater, layoutRight);
                             break;
                         case "air_temperature":
-                            new AirTemperatureCardUpdater().makeCard(inflater, layoutRight);
+                            updater = new AirTemperatureCardUpdater();
+                            updater.makeCard(inflater, layoutRight);
                             break;
                         case "air_athmosphericpressure":
-                            new AtmosphericPressureCardUpdater().makeCard(inflater, layoutRight);
+                            updater = new AtmosphericPressureCardUpdater();
+                            updater.makeCard(inflater, layoutRight);
                             break;
                         case "air_windspeed":
-                            new WindCardUpdater().makeCard(inflater, layoutRight);
+                            updater = new WindCardUpdater();
+                            updater.makeCard(inflater, layoutRight);
                             break;
                         case "air_rainamount":
-                            new RainCardUpdater().makeCard(inflater, layoutRight);
+                            updater = new RainCardUpdater();
+                            updater.makeCard(inflater, layoutRight);
                             break;
                         case "water_temperature":
-                            new WaterTemperatureCardUpdater().makeCard(inflater, layoutRight);
+                            updater = new WaterTemperatureCardUpdater();
+                            updater.makeCard(inflater, layoutRight);
                             break;
                         // Ignore:
                         case "smoje_battery": // not shown
@@ -97,14 +105,16 @@ public class SmuoyDetailFragment extends Fragment {
                         case "water_dissolvedoxygen":
                         case "water_drift":
                         default:
-                            new DefaultCardUpdater(sensor.name).makeCard(inflater, layoutRight);
+                            updater = new DefaultCardUpdater(sensor.name);
+                            updater.makeCard(inflater, layoutRight);
                             break;
                     }
+                    sensor.setUpdater(updater);
                 }
 
                 @Override
                 public void removed(Sensor sensor) {
-
+                    // NO OP
                 }
             });
         }

@@ -22,7 +22,7 @@ public class MapCardUpdater extends CardUpdater {
 
     @Override
     protected void updateCard(Measurement measurement) {
-        String[] latlng = measurement.getValueString().split(";");
+        String[] latlng = measurement.getString().split(";");
         double latitude = Double.parseDouble(latlng[0]);
         double longitude = Double.parseDouble(latlng[1]);
         LatLng location = new LatLng(latitude, longitude);
