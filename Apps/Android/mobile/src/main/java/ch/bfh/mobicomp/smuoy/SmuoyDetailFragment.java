@@ -65,7 +65,7 @@ public class SmuoyDetailFragment extends Fragment {
                 public void added(Sensor sensor) {
                     CardUpdater updater = null;
                     switch (sensor.name) {
-                        case "air_camera":
+                        case "camera":
                             updater = new ImageCardUpdater();
                             updater.makeCard(inflater, layoutLeft);
                             break;

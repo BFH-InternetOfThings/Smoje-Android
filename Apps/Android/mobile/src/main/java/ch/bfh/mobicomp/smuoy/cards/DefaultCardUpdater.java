@@ -30,6 +30,6 @@ public class DefaultCardUpdater extends CardUpdater {
 
     @Override
     protected int getLayout() {
-        return labelId;
+        return R.layout.data_card_basic;
     }
 }
