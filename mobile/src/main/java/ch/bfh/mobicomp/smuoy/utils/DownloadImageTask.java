@@ -30,7 +30,6 @@ public class DownloadImageTask extends AsyncTask<URL, Void, Bitmap> {
     public DownloadImageTask(String identifier, CardView cardView, long cacheTimeInSeconds) {
         this.identifier = identifier;
         this.cardView = cardView;
-        cardView.setVisibility(View.GONE);
         this.imageView = (ImageView) cardView.findViewById(R.id.image);
         this.cacheTimeInMilliSeconds = cacheTimeInSeconds * 1000;
     }
@@ -57,7 +56,7 @@ public class DownloadImageTask extends AsyncTask<URL, Void, Bitmap> {
     protected void onPostExecute(Bitmap result) {
         if (result != null) {
             imageView.setImageBitmap(result);
-            if (cardView != null) {
+            if (cardView != null && cardView.getVisibility() != View.VISIBLE) {
                 cardView.setVisibility(View.VISIBLE);
             }
         }

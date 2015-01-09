@@ -26,7 +26,8 @@ import java.util.concurrent.TimeUnit;
  * Handles sensor measurements and groups them in a usable manner
  */
 public class MeasurementService {
-    private static final long DEFAULT_DELAY = 300;
+    private static final long DEFAULT_DELAY = 30000;
+    private static final long MIN_DELAY = 5000;
     private static final String SERVICE_URL = "http://178.62.163.199/smoje/index.php/stations/";
 
     public static final MeasurementService measurementService = new MeasurementService();
@@ -60,8 +61,12 @@ public class MeasurementService {
                 long delay = sensor.delay;
                 if (measurements.size() > 0) {
                     delay = measurements.get(0).getNextExecutionTime() - System.currentTimeMillis() + 500;
-                    if (delay < 0) {
-                        delay = 0;
+                    if (delay < MIN_DELAY) {
+                        if (delay < 0) {
+                            delay = DEFAULT_DELAY;
+                        } else {
+                            delay = MIN_DELAY;
+                        }
                     }
                 }
                 scheduler.schedule(this, delay, TimeUnit.MILLISECONDS);
