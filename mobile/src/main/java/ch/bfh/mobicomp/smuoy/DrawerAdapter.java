@@ -15,6 +15,11 @@ public class DrawerAdapter extends BaseAdapter {
     private final List<DrawerItem> drawerItems = new ArrayList<>();
 
     public DrawerAdapter(Activity activity, DrawerItemGroup... groups) {
+        // Apparently there are situations where this occurs,
+        // probably when the app is about to close:
+        if (activity == null)
+            return;
+
         this.activity = activity;
         for (DrawerItemGroup group : groups) {
             if (group.groupName != 0) {
