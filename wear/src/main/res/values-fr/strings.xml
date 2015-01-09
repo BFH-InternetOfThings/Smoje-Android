@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Smouée</string>
+    <string name="hello_round">\'ello ronde \'orld!</string>
+    <string name="hello_square">\'ello squair \'orld!</string>
+</resources>

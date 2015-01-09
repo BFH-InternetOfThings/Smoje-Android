@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Smoje</string>
+    <string name="data_card_image_alt">Ein aktuelles Bild der Smoje</string>
+    <string name="title_smuoy_detail">Smoje Detailansicht</string>
+    <string name="map_view">Karte</string>
+    <string name="error_loading_map">Karte kann nicht dargestellt werden</string>
+    <string name="action_settings">Einstellungen</string>
+    <string name="title_activity_map">Karte</string>
+    <string name="wind">Wind</string>
+    <string name="direction_label">Richtung:</string>
+    <string name="speed_label">Geschwindigkeit:</string>
+    <string name="temperature_water">Wassertemperatur</string>
+    <string name="temperature_air">Lufttemperatur</string>
+    <string name="temperature">Temperatur</string>
+    <string name="navigation_drawer_close">Seitennavigation schließen</string>
+    <string name="navigation_drawer_open">Seitennavigation öffnen</string>
+    <string name="smuoys">Smojen</string>
+    <string name="rain">Regen</string>
+    <string name="atmospheric_pressure">Luftdruck</string>
+    <string name="humidity">Luftfeuchtigkeit</string>
+</resources>

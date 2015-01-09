@@ -1,0 +1,30 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:background="#cccc">
+
+    <ImageView
+            android:id="@+id/logo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:src="@drawable/logo"
+            android:scaleType="fitStart"
+            android:adjustViewBounds="true"
+            tools:ignore="ContentDescription"/>
+
+    <ListView
+            android:id="@+id/smuoy_list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_below="@+id/logo"
+            android:layout_alignParentBottom="true"
+            android:choiceMode="singleChoice"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="0dp"
+            tools:context="ch.bfh.mobicomp.smuoy.NavigationDrawerFragment"/>
+
+</RelativeLayout>

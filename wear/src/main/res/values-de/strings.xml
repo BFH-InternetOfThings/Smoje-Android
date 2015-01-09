@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Smoje</string>
+    <string name="hello_round">Hallo runde Welt!</string>
+    <string name="hello_square">Hallo eckige Welt!</string>
+</resources>
