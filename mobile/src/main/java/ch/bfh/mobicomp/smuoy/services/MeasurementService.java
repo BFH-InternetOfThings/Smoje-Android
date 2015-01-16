@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 public class MeasurementService {
     private static final long DEFAULT_DELAY = 30000;
     private static final long MIN_DELAY = 5000;
-    private static final String SERVICE_URL = "http://178.62.163.199/smoje/index.php/stations/";
+    private static final String SERVICE_URL = "http://178.62.159.123/smoje/index.php/stations/";
 
     public static final MeasurementService measurementService = new MeasurementService();
 

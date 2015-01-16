@@ -25,7 +25,7 @@ import static java.lang.System.currentTimeMillis;
  */
 public class SmuoyService {
     private static final long MIN_TIME_BETWEEN_REQUESTS = 10000;
-    private static final String SERVICE_URL = "http://178.62.163.199/smoje/index.php/stations/";
+    private static final String SERVICE_URL = "http://178.62.159.123/smoje/index.php/stations/";
     public static final SmuoyService smuoyService = new SmuoyService();
 
     private volatile boolean loading = false;

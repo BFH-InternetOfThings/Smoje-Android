@@ -9,7 +9,7 @@ import ch.bfh.mobicomp.smuoy.entities.Measurement;
 public class AtmosphericPressureCardUpdater extends CardUpdater {
     @Override
     protected void updateCard(Measurement measurement) {
-        setText(R.id.value, String.format("%1$.1f%2$s", measurement.getValue() * 10, " hPa"));
+        setText(R.id.value, String.format("%1$.1f %2$s", measurement.getValue(), measurement.sensor.unit));
     }
 
     @Override
