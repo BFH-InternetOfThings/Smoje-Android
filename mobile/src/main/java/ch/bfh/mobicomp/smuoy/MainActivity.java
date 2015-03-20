@@ -7,7 +7,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
 import ch.bfh.mobicomp.smuoy.entities.Smuoy;
-import ch.bfh.mobicomp.smuoy.services.MeasurementService;
 import ch.bfh.mobicomp.smuoy.services.SmuoyService;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -31,7 +30,7 @@ public class MainActivity extends ActionBarActivity
 
     private final static LatLngBounds LAKE_BIEL = new LatLngBounds(
             new LatLng(47.034301, 7.060707),
-            new LatLng(47.1492499,7.2548801)
+            new LatLng(47.1492499, 7.2548801)
     );
 
     private final Map<String, Smuoy> markerSmuoyMap = new HashMap<>();
@@ -83,15 +82,23 @@ public class MainActivity extends ActionBarActivity
                     smuoyService.loadSmuoys(new SmuoyService.SmuoyLoadedListener() {
                         @Override
                         public void onSmuoyListLoaded(Collection<Smuoy> smuoys) {
-                            for (Smuoy smuoy : smuoys) {
-                                LatLng location = MeasurementService.measurementService.getLocation(smuoy);
-                                if (location != null) {
-                                    Marker marker = map.addMarker(new MarkerOptions()
-                                            .position(location)
-                                            .title(smuoy.name));
-                                    marker.showInfoWindow();
-                                    markerSmuoyMap.put(marker.getId(), smuoy);
-                                }
+                            for (final Smuoy smuoy : smuoys) {
+                                smuoy.setUpdater(new Smuoy.LocationUpdater() {
+                                    private Marker marker;
+
+                                    @Override
+                                    public void update(LatLng location) {
+                                        if (marker == null) {
+                                            marker = map.addMarker(new MarkerOptions()
+                                                    .position(location)
+                                                    .title(smuoy.name));
+                                            marker.showInfoWindow();
+                                            markerSmuoyMap.put(marker.getId(), smuoy);
+                                        } else {
+                                            marker.setPosition(location);
+                                        }
+                                    }
+                                });
                             }
                         }
                     });

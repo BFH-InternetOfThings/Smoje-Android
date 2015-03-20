@@ -18,6 +18,8 @@ public class Sensor implements Serializable {
     public final String status;
     public final String unit;
 
+    public final int displayType;
+
     private Measurement lastMeasurement;
     private CardUpdater updater;
 
@@ -27,6 +29,7 @@ public class Sensor implements Serializable {
         delay = num(json, "delay", 60);
         status = str(json, "status", "");
         unit = str(json, "unit", "");
+        displayType = num(json, "displayTypeId", 3);
     }
 
     public void update(Measurement newMeasurement) {

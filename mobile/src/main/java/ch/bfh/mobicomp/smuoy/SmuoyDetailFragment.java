@@ -60,9 +60,16 @@ public class SmuoyDetailFragment extends Fragment {
         }
 
         if (item != null) {
+            MapCardUpdater mapUpdater = new MapCardUpdater(getFragmentManager());
+            item.setUpdater(mapUpdater);
+            mapUpdater.makeCard(inflater, layoutLeft);
+            item.setUpdater(mapUpdater);
+
             item.setListener(new Smuoy.SensorListener() {
                 @Override
                 public void added(Sensor sensor) {
+                    if (sensor.displayType >= 3) return;
+
                     CardUpdater updater = null;
                     switch (sensor.name) {
                         case "camera":
@@ -112,10 +119,6 @@ public class SmuoyDetailFragment extends Fragment {
                     sensor.setUpdater(updater);
                 }
 
-                @Override
-                public void removed(Sensor sensor) {
-                    // NO OP
-                }
             });
         }
 

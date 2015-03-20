@@ -16,7 +16,7 @@ import java.net.URL;
  * Created by chris on 12.12.14.
  */
 public class ImageCardUpdater extends CardUpdater {
-    private static final String IMAGE_BASE_URL = "http://178.62.159.123/img/";
+    private static final String IMAGE_BASE_URL = "http://smoje.ch/img/";
 
     @Override
     protected void updateCard(Measurement measurement) {
