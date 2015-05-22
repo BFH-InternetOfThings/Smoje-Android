@@ -45,6 +45,7 @@ public class DownloadImageTask extends AsyncTask<URL, Void, Bitmap> {
                 while ((r = in.read(buf)) > 0) {
                     out.write(buf, 0, r);
                 }
+                in.close();
             }
             return BitmapFactory.decodeFile(cacheFile.getAbsolutePath());
         } catch (Exception e) {

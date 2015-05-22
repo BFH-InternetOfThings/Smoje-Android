@@ -3,7 +3,6 @@ package ch.bfh.mobicomp.smuoy;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,8 +27,6 @@ public class SmuoyDetailFragment extends Fragment {
      * The dummy content this fragment is presenting.
      */
     private Smuoy item;
-
-    private CharSequence originalTitle;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,9 +58,8 @@ public class SmuoyDetailFragment extends Fragment {
 
         if (item != null) {
             MapCardUpdater mapUpdater = new MapCardUpdater(getFragmentManager());
-            item.setUpdater(mapUpdater);
             mapUpdater.makeCard(inflater, layoutLeft);
-            item.setUpdater(mapUpdater);
+            item.addUpdater(mapUpdater);
 
             item.setListener(new Smuoy.SensorListener() {
                 @Override
@@ -129,15 +125,13 @@ public class SmuoyDetailFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         if (item != null) {
-            originalTitle = activity.getTitle();
-            Log.d("detailFragment", "" + originalTitle);
             activity.setTitle(item.name);
         }
     }
 
     @Override
     public void onDetach() {
-        getActivity().setTitle(originalTitle);
+        getActivity().setTitle(R.string.app_name);
         super.onDetach();
     }
 

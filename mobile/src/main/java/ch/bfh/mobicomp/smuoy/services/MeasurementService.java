@@ -7,14 +7,13 @@ import ch.bfh.mobicomp.smuoy.entities.Smuoy;
 import ch.bfh.mobicomp.smuoy.utils.MagicMap;
 import ch.bfh.mobicomp.smuoy.utils.Utils;
 import com.google.android.gms.maps.model.LatLng;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -34,16 +33,17 @@ public class MeasurementService {
     public static final MeasurementService measurementService = new MeasurementService();
 
     private ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-    private HttpClient httpClient = new DefaultHttpClient();
 
     private Map<Smuoy, Map<String, List<Measurement>>> registry = new MagicMap<>(2, ArrayList.class);
 
+    private List<Runnable> updaterTasks = new LinkedList<>();
+
     public void registerSmuoy(final Smuoy smuoy) {
-        scheduler.schedule(new Runnable() {
+        Runnable task = new Runnable() {
             @Override
             public void run() {
                 try {
-                    String response = Utils.request(httpClient, new HttpGet(smuoy.urlGPS));
+                    String response = Utils.request(new HttpGet(smuoy.urlGPS));
 
                     JSONObject jsonResponse = new JSONObject(response);
                     JSONObject lastPosition = jsonResponse.getJSONObject("lastPosition");
@@ -54,9 +54,23 @@ public class MeasurementService {
                 } catch (Exception e) {
                     Log.e("GPS", e.getMessage(), e);
                 }
-                scheduler.schedule(this, 5, TimeUnit.MINUTES);
             }
-        }, 0, TimeUnit.MILLISECONDS);
+        };
+        updaterTasks.add(task);
+        if (scheduler != null && !scheduler.isShutdown()) {
+            scheduler.scheduleWithFixedDelay(task, 0, 5, TimeUnit.MINUTES);
+        }
+    }
+
+    public void startup() {
+        for (Runnable task : updaterTasks) {
+            scheduler.scheduleWithFixedDelay(task, 0, 5, TimeUnit.MINUTES);
+        }
+    }
+
+    public void shutdown() {
+        scheduler.shutdown();
+        scheduler = Executors.newSingleThreadScheduledExecutor();
     }
 
     public void registerSensor(final Smuoy smuoy, final Sensor sensor) {
@@ -65,7 +79,7 @@ public class MeasurementService {
             public void run() {
                 long nextExecutionTime = 0;
                 try {
-                    String response = Utils.request(httpClient, new HttpGet(SERVICE_URL + smuoy.id + "/sensors/measurements"));
+                    String response = Utils.request(new HttpGet(SERVICE_URL + smuoy.id + "/sensors/measurements"));
 
                     JSONArray jsonMeasurements = getMeasurements(sensor, response);
 

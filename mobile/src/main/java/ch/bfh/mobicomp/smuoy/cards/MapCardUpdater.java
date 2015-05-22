@@ -66,6 +66,9 @@ public class MapCardUpdater extends CardUpdater implements LocationUpdater {
         } else {
             mapFragment.updateMarker(location);
         }
+        if (card != null && card.getVisibility() != View.VISIBLE) {
+            card.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -78,6 +81,7 @@ public class MapCardUpdater extends CardUpdater implements LocationUpdater {
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(inflater.getContext());
         if (resultCode == ConnectionResult.SUCCESS) {
             super.makeCard(inflater, parentView);
+            card.setVisibility(View.GONE);
         }
     }
 }

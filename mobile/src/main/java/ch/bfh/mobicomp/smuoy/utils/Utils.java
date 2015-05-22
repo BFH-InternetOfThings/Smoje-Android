@@ -6,6 +6,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -73,8 +74,8 @@ public class Utils {
         }
     }
 
-    public static String request(HttpClient httpClient, HttpUriRequest request) throws IOException {
-        HttpResponse response = httpClient.execute(request);
+    public static String request(HttpUriRequest request) throws IOException {
+        HttpResponse response = new DefaultHttpClient().execute(request);
         StatusLine statusLine = response.getStatusLine();
         if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
             ByteArrayOutputStream out = new ByteArrayOutputStream();

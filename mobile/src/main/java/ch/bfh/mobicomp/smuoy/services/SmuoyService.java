@@ -5,9 +5,7 @@ import android.util.Log;
 import ch.bfh.mobicomp.smuoy.entities.Sensor;
 import ch.bfh.mobicomp.smuoy.entities.Smuoy;
 import ch.bfh.mobicomp.smuoy.utils.Utils;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -64,22 +62,20 @@ public class SmuoyService {
         return loadedSmuoys.get(id);
     }
 
-    public static interface SmuoyLoadedListener {
+    public interface SmuoyLoadedListener {
         /**
          * This callback method will be executed on the GUI thread.
          */
-        public void onSmuoyListLoaded(Collection<Smuoy> smuoys);
+        void onSmuoyListLoaded(Collection<Smuoy> smuoys);
     }
 
     private class LoadSmuoysTask extends AsyncTask<Void, Void, List<Smuoy>> {
-        private HttpClient httpClient = new DefaultHttpClient();
-
         @Override
         protected List<Smuoy> doInBackground(Void... params) {
             try {
                 List<Smuoy> result = new LinkedList<>();
 
-                JSONObject jsonObject = new JSONObject(Utils.request(httpClient, new HttpGet(SERVICE_URL)));
+                JSONObject jsonObject = new JSONObject(Utils.request(new HttpGet(SERVICE_URL)));
                 JSONArray jsonArray = jsonObject.getJSONArray("stations");
                 for (int i = 0; i < jsonArray.length(); i++) {
                     Smuoy smuoy = new Smuoy(jsonArray.getJSONObject(i));
@@ -96,7 +92,7 @@ public class SmuoyService {
 
         private void loadSensors(Smuoy smuoy) {
             try {
-                JSONObject jsonObject = new JSONObject(Utils.request(httpClient, new HttpGet(SERVICE_URL + smuoy.id + "/sensors/")));
+                JSONObject jsonObject = new JSONObject(Utils.request(new HttpGet(SERVICE_URL + smuoy.id + "/sensors/")));
                 JSONArray jsonArray = jsonObject.getJSONArray("sensors");
                 for (int i = 0; i < jsonArray.length(); i++) {
                     Sensor sensor = new Sensor(jsonArray.getJSONObject(i));

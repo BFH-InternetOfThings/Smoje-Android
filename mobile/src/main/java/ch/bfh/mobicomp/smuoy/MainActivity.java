@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import static ch.bfh.mobicomp.smuoy.services.MeasurementService.measurementService;
 import static ch.bfh.mobicomp.smuoy.services.SmuoyService.smuoyService;
 
 
@@ -83,7 +84,7 @@ public class MainActivity extends ActionBarActivity
                         @Override
                         public void onSmuoyListLoaded(Collection<Smuoy> smuoys) {
                             for (final Smuoy smuoy : smuoys) {
-                                smuoy.setUpdater(new Smuoy.LocationUpdater() {
+                                smuoy.addUpdater(new Smuoy.LocationUpdater() {
                                     private Marker marker;
 
                                     @Override
@@ -118,6 +119,13 @@ public class MainActivity extends ActionBarActivity
         } else {
             GooglePlayServicesUtil.getErrorDialog(resultCode, this, 1);
         }
+        measurementService.startup();
+    }
+
+    @Override
+    protected void onPause() {
+        measurementService.shutdown();
+        super.onPause();
     }
 
     @Override

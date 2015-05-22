@@ -4,7 +4,10 @@ import com.google.android.gms.maps.model.LatLng;
 import org.json.JSONObject;
 
 import java.io.Serializable;
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import static ch.bfh.mobicomp.smuoy.utils.Utils.str;
@@ -19,7 +22,7 @@ public class Smuoy implements Serializable {
     private LatLng location;
 
     public SensorListener listener;
-    private LocationUpdater updater;
+    private List<WeakReference<LocationUpdater>> updaters = new LinkedList<>();
 
     public Smuoy(JSONObject json) {
         id = str(json, "stationId", "");
@@ -39,8 +42,8 @@ public class Smuoy implements Serializable {
         }
     }
 
-    public void setUpdater(LocationUpdater updater) {
-        this.updater = updater;
+    public void addUpdater(LocationUpdater updater) {
+        updaters.add(new WeakReference<>(updater));
         if (location != null) {
             updater.update(location);
         }
@@ -53,16 +56,18 @@ public class Smuoy implements Serializable {
 
     public void updateLocation(LatLng location) {
         this.location = location;
-        if (updater != null) {
-            updater.update(location);
+        for (WeakReference<LocationUpdater> updater : updaters) {
+            if (updater.get() != null) {
+                updater.get().update(location);
+            }
         }
     }
 
-    public static interface SensorListener {
+    public interface SensorListener {
         void added(Sensor sensor);
     }
 
-    public static interface LocationUpdater {
-        public void update(LatLng location);
+    public interface LocationUpdater {
+        void update(LatLng location);
     }
 }
