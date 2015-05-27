@@ -26,8 +26,6 @@ import static ch.bfh.mobicomp.smuoy.utils.Utils.dec;
  * Handles sensor measurements and groups them in a usable manner
  */
 public class MeasurementService {
-    private static final long DEFAULT_DELAY = 30000;
-    private static final long MIN_DELAY = 5000;
     private static final String SERVICE_URL = "http://smoje.ch/smoje/index.php/stations/";
 
     public static final MeasurementService measurementService = new MeasurementService();
@@ -56,15 +54,19 @@ public class MeasurementService {
                 }
             }
         };
+        addTask(task);
+    }
+
+    private void addTask(Runnable task){
         updaterTasks.add(task);
         if (scheduler != null && !scheduler.isShutdown()) {
-            scheduler.scheduleWithFixedDelay(task, 0, 5, TimeUnit.MINUTES);
+            scheduler.scheduleWithFixedDelay(task, 0, 1, TimeUnit.MINUTES);
         }
     }
 
     public void startup() {
         for (Runnable task : updaterTasks) {
-            scheduler.scheduleWithFixedDelay(task, 0, 5, TimeUnit.MINUTES);
+            scheduler.scheduleWithFixedDelay(task, 0, 1, TimeUnit.MINUTES);
         }
     }
 
@@ -74,7 +76,7 @@ public class MeasurementService {
     }
 
     public void registerSensor(final Smuoy smuoy, final Sensor sensor) {
-        scheduler.schedule(new Runnable() {
+        Runnable task = new Runnable() {
             @Override
             public void run() {
                 long nextExecutionTime = 0;
@@ -97,20 +99,9 @@ public class MeasurementService {
                 } catch (Exception e) {
                     Log.e("measurementService", e.getMessage(), e);
                 }
-                long delay = sensor.delay;
-                if (nextExecutionTime > 0) {
-                    delay = nextExecutionTime - System.currentTimeMillis() + 500;
-                    if (delay < MIN_DELAY) {
-                        if (delay < 0) {
-                            delay = DEFAULT_DELAY;
-                        } else {
-                            delay = MIN_DELAY;
-                        }
-                    }
-                }
-                scheduler.schedule(this, delay, TimeUnit.MILLISECONDS);
             }
-        }, 0, TimeUnit.MILLISECONDS);
+        };
+        addTask(task);
     }
 
     private JSONArray getMeasurements(Sensor sensor, String response) throws JSONException {
